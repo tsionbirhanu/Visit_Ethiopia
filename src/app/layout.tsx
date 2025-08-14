@@ -1,41 +1,36 @@
-import type { Metadata } from "next";
-import { ThemeProvider } from "@/utils/theme-provider";
-import { Inter } from 'next/font/google'
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
-import "./globals.css";
+import type React from "react"
+import type { Metadata } from "next"
+import { Inter, Poppins } from "next/font/google"
+import "./globals.css"
 
 const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+})
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-poppins",
 })
 
 export const metadata: Metadata = {
-  title: "Zemenay",
-  description: "A one stop shop for your tech needs",
-};
+  title: "Visit Ethiopia - Discover the Land of Origins",
+  description:
+    "Explore Ethiopia's ancient wonders, vibrant culture, and breathtaking landscapes. Book your Ethiopian adventure today.",
+  generator: "next js",
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={inter.className}
-      >
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <Navbar/>
-              {children}
-            <Footer/>
-        </ThemeProvider>
-      </body>
+    <html lang="en" className={`${inter.variable} ${poppins.variable} antialiased`}>
+      <body className="font-sans">{children}</body>
     </html>
-  );
+  )
 }

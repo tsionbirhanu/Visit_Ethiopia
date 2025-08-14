@@ -1,10 +1,12 @@
 import type { NextConfig } from "next";
-const { i18n } = require('./next-i18next.config')
+import { i18n } from './next-i18next.config';
 
 const nextConfig: NextConfig = {
-  /* config options here */
   reactStrictMode: true,
   i18n,
+  images: {
+    domains: ["hebbkx1anhila5yf.public.blob.vercel-storage.com"],
+  },
 };
 
 export default nextConfig;

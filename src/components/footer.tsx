@@ -1,95 +1,108 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { InstagramLogoIcon, LinkedInLogoIcon, EnvelopeClosedIcon } from "@radix-ui/react-icons"
+"use client";
 
-const quickLinks = [
-  { name: "Home", href: "/" },
-  { name: "About", href: "/about" },
-  { name: "Services", href: "/services" },
-  { name: "Pricing", href: "/pricing" },
-  { name: "Contact Us", href: "/contact" },
-]
+import { Facebook, Instagram, Twitter } from "lucide-react";
+import Image from "next/image";
 
-const legalLinks = [
-  { name: "Privacy Policy", href: "/privacy" },
-  { name: "Terms of Service", href: "/terms" },
-]
+export default function Footer() {
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
-export function Footer() {
   return (
-    <footer className="bg-background border-t">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-          <div className="space-y-4">
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-full" />
-              <span className="font-bold text-xl">Zemenay</span>
-            </Link>
-            <div className="flex space-x-4">
-              <Button variant="ghost" size="icon" asChild>
-                <Link href="https://instagram.com" target="_blank" rel="noopener noreferrer">
-                  <InstagramLogoIcon className="w-5 h-5" />
-                  <span className="sr-only">Instagram</span>
-                </Link>
-              </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <Link href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
-                  <LinkedInLogoIcon className="w-5 h-5" />
-                  <span className="sr-only">LinkedIn</span>
-                </Link>
-              </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <Link href="mailto:contact@example.com">
-                  <EnvelopeClosedIcon className="w-5 h-5" />
-                  <span className="sr-only">Email</span>
-                </Link>
-              </Button>
-            </div>
+    <footer id="contact" className="bg-amber-900 text-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="md:col-span-2">
+            <Image
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-RwmYJU5vWEiCvCWOBtN6BBhGprFxHF.png"
+              alt="Visitopia"
+              width={150}
+              height={32} 
+              className="h-8 w-auto mb-4 brightness-0 invert"
+            />
+            <p className="text-amber-100 text-sm leading-relaxed max-w-md">
+              Connecting travelers with local guides for authentic Ethiopian
+              experiences. Skip the tourist trail and step into the heart of
+              Ethiopian life.
+            </p>
           </div>
+
+          {/* Quick Links */}
           <div>
-            <h3 className="font-semibold text-lg mb-4">Quick Links</h3>
+            <h3 className="text-white font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
-              {quickLinks.map((link) => (
-                <li key={link.name}>
-                  <Link href={link.href} className="text-muted-foreground hover:text-primary transition-colors">
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <button
+                  onClick={() => scrollToSection("about")}
+                  className="text-amber-100 hover:text-white text-sm transition-colors duration-200">
+                  About
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => scrollToSection("packages")}
+                  className="text-amber-100 hover:text-white text-sm transition-colors duration-200">
+                  Packages
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => scrollToSection("how-it-works")}
+                  className="text-amber-100 hover:text-white text-sm transition-colors duration-200">
+                  How It Works
+                </button>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="text-amber-100 hover:text-white text-sm transition-colors duration-200">
+                  Terms & Privacy
+                </a>
+              </li>
             </ul>
           </div>
 
+          {/* Contact & Social */}
           <div>
-            <h3 className="font-semibold text-lg mb-4">Legal</h3>
-            <ul className="space-y-2">
-              {legalLinks.map((link) => (
-                <li key={link.name}>
-                  <Link href={link.href} className="text-muted-foreground hover:text-primary transition-colors">
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="md:col-span-2 lg:col-span-1">
-            <h3 className="font-semibold text-lg mb-4">Subscribe to Our Newsletter</h3>
-            <p className="text-muted-foreground mb-4">Stay updated with our latest news and offers.</p>
-            <form className="flex space-x-2">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-grow px-3 py-2 bg-background border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-              <Button type="submit">Subscribe</Button>
-            </form>
+            <h3 className="text-white font-semibold mb-4">Connect With Us</h3>
+            <div className="flex space-x-4 mb-4">
+              <a
+                href="#"
+                className="text-amber-100 hover:text-white transition-colors duration-200"
+                aria-label="Instagram">
+                <Instagram size={20} />
+              </a>
+              <a
+                href="#"
+                className="text-amber-100 hover:text-white transition-colors duration-200"
+                aria-label="Facebook">
+                <Facebook size={20} />
+              </a>
+              <a
+                href="#"
+                className="text-amber-100 hover:text-white transition-colors duration-200"
+                aria-label="Twitter">
+                <Twitter size={20} />
+              </a>
+            </div>
+            <p className="text-amber-100 text-sm">
+              Email: hello@visitopia.com
+              <br />
+              Phone: +251 11 123 4567
+            </p>
           </div>
         </div>
-        <Separator className="my-8" />
-        <div className="text-center text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Your Company Name. All rights reserved.</p>
+
+        {/* Copyright */}
+        <div className="border-t border-amber-800 mt-8 pt-8 text-center">
+          <p className="text-amber-100 text-sm">
+            © 2025 Visitopia. All rights reserved. Moments Made With Locals.
+          </p>
         </div>
       </div>
     </footer>
-  )
+  );
 }
