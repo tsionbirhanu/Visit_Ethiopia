@@ -27,11 +27,11 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0">
             <Image
-              src="/images/logo.png"
+              src="/images/logo2.png"
               alt="Visitopia - Moments Made With Locals"
               width={140}
               height={36}
-              className="h-9 w-auto hover:scale-105 transition-transform duration-300"
+              className="h-9 w-auto hover:scale-105 transition-transform duration-300 "
               priority
             />
           </div>

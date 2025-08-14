@@ -462,7 +462,7 @@ export default function HomePage() {
             You could be staring at your phone, or you could be learning how to
             roast coffee with someone&apos;s grandma. Your call.
           </p>
-          <Button className="bg-white text-amber-900 hover:bg-amber-50 px-10 py-4 text-lg rounded-full font-semibold shadow-lg hover:shadow-xl hover:scale-105 animate-bounce hover:animate-none transition-all duration-300">
+          <Button className="bg-white text-amber-900 hover:bg-amber-50 px-10 py-4 text-lg rounded-full font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
             Find My Local Friend
           </Button>
         </div>
