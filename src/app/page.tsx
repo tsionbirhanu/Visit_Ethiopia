@@ -57,10 +57,11 @@ export default function HomePage() {
         className="relative h-screen bg-cover bg-center bg-no-repeat">
         <div className="absolute inset-0 bg-cover bg-center">
           <Image
-            src="/images/Lalibela2.jpg"
+            src="/images/Lalibela4.jpg"
             alt="Lalibela, Ethiopia"
             fill
             style={{ objectFit: "cover", objectPosition: "center" }}
+            quality={100}
             priority
           />
           <div className="absolute inset-0 bg-black/40"></div>
@@ -78,7 +79,7 @@ export default function HomePage() {
           <Button
             onClick={() => scrollToSection("packages")}
             className="bg-white text-amber-900 hover:bg-amber-50 w-fit px-8 py-4 text-lg rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
-           book now
+           Find My Local Friend
           </Button>
         </div>
 
