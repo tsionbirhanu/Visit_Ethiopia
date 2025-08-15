@@ -20,13 +20,46 @@ import Footer from "@/components/footer";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import Image from "next/image";
 
+interface Package {
+  id: number;
+  name: string;
+  inclusions: string[];
+  Price: {
+    Regular: string;
+    [key: string]: string;
+  };
+}
+
 export default function HomePage() {
   const [currentTagline, setCurrentTagline] = useState(0);
+  const [packages, setPackages] = useState<Package[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const taglines = [
     "12 Hours. One Adventure. Let's Go.",
     "Adventure Starts With a Hello.",
     "Meet Locals, Make Memories.",
   ];
+
+  useEffect(() => {
+    const fetchPackages = async () => {
+      try {
+        const response = await fetch('/api/packages');
+        if (!response.ok) {
+          throw new Error('Failed to fetch packages');
+        }
+        const data = await response.json();
+        setPackages(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch packages');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPackages();
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -40,6 +73,11 @@ export default function HomePage() {
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
     }
+  };
+
+  const getPriceOption = (pkg: Package) => {
+    const keys = Object.keys(pkg.Price).filter(key => key !== "Regular");
+    return keys.length > 0 ? keys[0] : "";
   };
 
   const aboutAnimation = useScrollAnimation();
@@ -306,7 +344,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section
+      
+     <section
         id="packages"
         ref={packagesAnimation.ref}
         className={`py-20 bg-amber-50 transition-all duration-1000 ${
@@ -315,159 +354,69 @@ export default function HomePage() {
             : "opacity-0 translate-y-8"
         }`}>
         <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-4xl font-bold text-gray-900 mb-16">Packages</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-8">Our Packages</h2>
+          <p className="text-xl text-gray-600 mb-16 text-center">
+            Choose the perfect experience for your Ethiopian adventure
+          </p>
 
-          <div className="grid md:grid-cols-3 gap-8 mb-12">
-            <Card className="overflow-hidden border-0 shadow-lg bg-white hover:shadow-2xl hover:scale-105 transition-all duration-300">
-              <div className="relative">
-                <Image
-                  src="/images/hamer.png"
-                  alt="Essential Pass"
-                  width={300} 
-                  height={200} 
-                  className="w-full h-48 object-cover"
-                />
-                <div className="absolute top-4 left-4 flex items-center space-x-1">
-                  <span className="text-white text-sm font-medium">5.0</span>
-                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                </div>
-              </div>
-              <CardContent className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  Essential Pass
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">
-                  Visit 1 Major Site, optional lunch, local guide + transport
-                </p>
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <span className="text-2xl font-bold text-gray-900">
-                      $75
-                    </span>
-                    <span className="text-gray-500 text-sm"> regular</span>
-                  </div>
-                  <div>
-                    <span className="text-lg font-semibold text-amber-800">
-                      $100
-                    </span>
-                    <span className="text-gray-500 text-sm"> with food</span>
-                  </div>
-                </div>
-                <Button className="w-full bg-amber-800 hover:bg-amber-900 text-white rounded-lg">
-                  Book Now
-                </Button>
-              </CardContent>
-            </Card>
+          {loading && (
+            <div className="text-center py-12">
+              <p>Loading packages...</p>
+            </div>
+          )}
 
-            <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-amber-800 to-amber-900 text-white transform scale-105 hover:shadow-2xl hover:scale-105 transition-all duration-300">
-              <div className="relative">
-                <Image
-                  src="/images/collection.png"
-                  alt="Explorer Day"
-                  width={300}
-                  height={200}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="absolute top-4 left-4 flex items-center space-x-1">
-                  <span className="text-white text-sm font-medium">4.9</span>
-                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                </div>
-                <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
-                  <span className="text-white text-xs font-medium">
-                    Most Popular
-                  </span>
-                </div>
-              </div>
-              <CardContent className="p-6">
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  Explorer Day
-                </h3>
-                <p className="text-sm text-white/80 mb-4">
-                  Visit 2 sites, lunch, local guide + transport
-                </p>
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <span className="text-2xl font-bold text-white">$120</span>
-                    <span className="text-white/70 text-sm"> regular</span>
-                  </div>
-                  <div>
-                    <span className="text-lg font-semibold text-amber-200">
-                      $150
-                    </span>
-                    <span className="text-white/70 text-sm"> with food</span>
-                  </div>
-                </div>
-                <Button className="w-full bg-white text-amber-800 hover:bg-amber-50 rounded-lg font-semibold">
-                  Book Now
-                </Button>
-              </CardContent>
-            </Card>
+          {error && (
+            <div className="text-center py-12 text-red-500">
+              <p>{error}</p>
+            </div>
+          )}
 
-            <Card className="overflow-hidden border-0 shadow-lg bg-white hover:shadow-2xl hover:scale-105 transition-all duration-300">
-              <div className="relative">
-                <Image
-                  src="/images/happy.png"
-                  alt="Full Cultural Immersion"
-                  width={300}
-                  height={200} 
-                  className="w-full h-48 object-cover"
-                />
-                <div className="absolute top-4 left-4 flex items-center space-x-1">
-                  <span className="text-white text-sm font-medium">5.0</span>
-                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                </div>
-              </div>
-              <CardContent className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  Full Cultural Immersion
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">
-                  Full-day, lunch + dinner, night cultural experience
-                </p>
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <span className="text-2xl font-bold text-gray-900">
-                      $250
-                    </span>
-                    <span className="text-gray-500 text-sm"> regular</span>
-                  </div>
-                  <div>
-                    <span className="text-lg font-semibold text-amber-800">
-                      $300
-                    </span>
-                    <span className="text-gray-500 text-sm"> with dancing</span>
-                  </div>
-                </div>
-                <Button className="w-full bg-amber-800 hover:bg-amber-900 text-white rounded-lg">
-                  Book Now
-                </Button>
-              </CardContent>
-            </Card>
+          <div className="grid md:grid-cols-3 gap-8">
+            {packages.map((pkg) => {
+              const priceOption = getPriceOption(pkg);
+              return (
+                <Card 
+                  key={pkg.id}
+                  className="border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                      {pkg.name}
+                    </h3>
+                    
+                    <ul className="space-y-3 mb-6">
+                      {pkg.inclusions.map((item, index) => (
+                        <li key={index} className="flex items-start">
+                          <Star className="w-4 h-4 mt-1 mr-2 text-amber-600 flex-shrink-0" />
+                          <span className="text-gray-700">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div className="mb-6">
+                      <div className="text-3xl font-bold text-amber-800">
+                        {pkg.Price.Regular}
+                      </div>
+                      {priceOption && (
+                        <div className="mt-2 p-3 bg-amber-100 rounded-lg">
+                          <div className="font-semibold text-amber-800">
+                            {priceOption}: {pkg.Price[priceOption]}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <Button className="w-full bg-amber-800 hover:bg-amber-900 text-white rounded-lg py-6 text-lg">
+                      Book Now
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </section>
-
-      <section
-        ref={ctaAnimation.ref}
-        className={`bg-gradient-to-br from-amber-800 to-amber-900 py-20 text-white transition-all duration-1000 ${
-          ctaAnimation.isVisible
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-8"
-        }`}>
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Find My Local Friend
-          </h2>
-          <p className="text-xl mb-8 opacity-90 leading-relaxed">
-            You could be staring at your phone, or you could be learning how to
-            roast coffee with someone&apos;s grandma. Your call.
-          </p>
-          <Button className="bg-white text-amber-900 hover:bg-amber-50 px-10 py-4 text-lg rounded-full font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
-            Find My Local Friend
-          </Button>
-        </div>
-      </section>
-
+      
       <Footer />
     </div>
   );
