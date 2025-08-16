@@ -2,18 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Star,
-  Clock,
-  Users,
-  MapPin,
-  Coffee,
-  Map,
-  Heart,
-  Shield,
-  Utensils,
-  Camera,
-} from "lucide-react";
+import { Clock, Users, MapPin } from "lucide-react";
 import { useState, useEffect } from "react";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
@@ -29,9 +18,18 @@ interface Package {
     [key: string]: string;
   };
 }
+const heroImages = [
+  "/images/Lalibela4.jpg",
+  "/images/hamer.png",
+  "/images/addis.png",
+  "/images/fox.jpg",
+  "/images/tana.jpg",
+  "/images/dallol.jpg",
+];
 
 export default function HomePage() {
   const [currentTagline, setCurrentTagline] = useState(0);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [packages, setPackages] = useState<Package[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,14 +43,16 @@ export default function HomePage() {
   useEffect(() => {
     const fetchPackages = async () => {
       try {
-        const response = await fetch('/api/packages');
+        const response = await fetch("/api/packages");
         if (!response.ok) {
-          throw new Error('Failed to fetch packages');
+          throw new Error("Failed to fetch packages");
         }
         const data = await response.json();
         setPackages(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch packages');
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch packages"
+        );
       } finally {
         setLoading(false);
       }
@@ -75,34 +75,44 @@ export default function HomePage() {
     }
   };
 
-  const getPriceOption = (pkg: Package) => {
-    const keys = Object.keys(pkg.Price).filter(key => key !== "Regular");
-    return keys.length > 0 ? keys[0] : "";
-  };
+  useEffect(() => {
+    const imageInterval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+
+    return () => {
+      clearInterval(imageInterval);
+    };
+  }, []);
 
   const aboutAnimation = useScrollAnimation();
   const howItWorksAnimation = useScrollAnimation();
   const benefitsAnimation = useScrollAnimation();
   const packagesAnimation = useScrollAnimation();
-  const ctaAnimation = useScrollAnimation();
 
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
 
-      <section
-        id="hero"
-        className="relative h-screen bg-cover bg-center bg-no-repeat">
-        <div className="absolute inset-0 bg-cover bg-center">
-          <Image
-            src="/images/Lalibela4.jpg"
-            alt="Lalibela, Ethiopia"
-            fill
-            style={{ objectFit: "cover", objectPosition: "center" }}
-            quality={100}
-            priority
-          />
-          <div className="absolute inset-0 bg-black/40"></div>
+      <section id="hero" className="relative h-screen overflow-hidden">
+        <div className="absolute inset-0">
+          {heroImages.map((src, index) => (
+            <div
+              key={src}
+              className={`absolute inset-0 transition-opacity duration-1000 ${
+                currentImageIndex === index ? "opacity-100" : "opacity-0"
+              }`}>
+              <Image
+                src={src}
+                alt={`Ethiopia landscape ${index + 1}`}
+                fill
+                style={{ objectFit: "cover", objectPosition: "center" }}
+                quality={100}
+                priority={index === 0}
+              />
+              <div className="absolute inset-0 bg-black/40"></div>
+            </div>
+          ))}
         </div>
 
         <div className="relative z-10 h-full flex flex-col justify-center px-6 md:px-12 max-w-7xl mx-auto">
@@ -117,7 +127,7 @@ export default function HomePage() {
           <Button
             onClick={() => scrollToSection("packages")}
             className="bg-white text-amber-900 hover:bg-amber-50 w-fit px-8 py-4 text-lg rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
-           Find My Local Friend
+            Find My Local Friend
           </Button>
         </div>
 
@@ -131,18 +141,20 @@ export default function HomePage() {
       <section
         id="about"
         ref={aboutAnimation.ref}
-        className={`py-20 bg-white transition-all duration-1000 ${
+        className={`py-20 bg-gray-50 transition-all duration-1000 ${
           aboutAnimation.isVisible
             ? "opacity-100 translate-y-0"
             : "opacity-0 translate-y-8"
         }`}>
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">
-                What Visitopia Is
-              </h2>
-              <p className="text-lg text-gray-700 leading-relaxed mb-6">
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          {" "}
+          <div>
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">
+              What Visitopia Is
+            </h2>
+            <div className="space-y-6">
+              {" "}
+              <p className="text-lg text-gray-700 leading-relaxed">
                 Visitopia connects travelers with local guides for real, human
                 experiences in Ethiopia.
               </p>
@@ -153,11 +165,6 @@ export default function HomePage() {
                 of Ethiopian life.
               </p>
             </div>
-            <div className="flex justify-center">
-              <div className="w-32 h-32 bg-amber-100 rounded-full flex items-center justify-center">
-                <Coffee className="w-16 h-16 text-amber-800" />
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -165,7 +172,7 @@ export default function HomePage() {
       <section
         id="how-it-works"
         ref={howItWorksAnimation.ref}
-        className={`py-20 bg-amber-50 transition-all duration-1000 ${
+        className={`py-20 bg-gray-50 transition-all duration-1000 ${
           howItWorksAnimation.isVisible
             ? "opacity-100 translate-y-0"
             : "opacity-0 translate-y-8"
@@ -176,71 +183,96 @@ export default function HomePage() {
               How It Works
             </h2>
             <p className="text-gray-600 text-lg">
-              3 Quick Steps to Your Ethiopian Adventure
+              3 Simple Steps to Your Authentic Ethiopian Experience
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <div
-              className={`text-center group transition-all duration-700 delay-100 ${
-                howItWorksAnimation.isVisible
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-8"
-              }`}>
-              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-amber-100 group-hover:scale-110 transition-all duration-300 shadow-md">
-                <Clock className="w-8 h-8 text-amber-800" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                Tell Us Your Timeframe
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Whether you have a few hours or a full day, we shape the
-                experience to fit your schedule perfectly.
-              </p>
-            </div>
+          <div className="relative">
+            <div className="hidden md:block absolute left-1/6 right-1/6 top-16 h-1 bg-amber-200 transform -translate-y-1/2"></div>
 
-            <div
-              className={`text-center group transition-all duration-700 delay-200 ${
-                howItWorksAnimation.isVisible
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-8"
-              }`}>
-              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-amber-100 group-hover:scale-110 transition-all duration-300 shadow-md">
-                <Users className="w-8 h-8 text-amber-800" />
+            <div className="grid md:grid-cols-3 gap-8 md:gap-12">
+              <div
+                className={`relative group transition-all duration-700 delay-100 ${
+                  howItWorksAnimation.isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-8"
+                }`}>
+                <div className="flex flex-col items-center text-center p-8 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 h-full">
+                  <div className="relative z-10 w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-amber-200 group-hover:scale-110 transition-all duration-300 shadow-md">
+                    <Clock className="w-10 h-10 text-amber-800" />
+                    <span className="absolute -top-2 -right-2 bg-amber-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
+                      1
+                    </span>
+                  </div>
+                  <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+                    Tell Us Your Timeframe
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Whether you have a few hours or a full day, we shape the
+                    experience to fit your schedule perfectly.
+                  </p>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                Match With a Local Guide
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                We connect you with someone who knows how to turn your time into
-                unforgettable stories and memories.
-              </p>
+              <div
+                className={`relative group transition-all duration-700 delay-200 ${
+                  howItWorksAnimation.isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-8"
+                }`}>
+                <div className="flex flex-col items-center text-center p-8 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 h-full">
+                  <div className="relative z-10 w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-amber-200 group-hover:scale-110 transition-all duration-300 shadow-md">
+                    <Users className="w-10 h-10 text-amber-800" />
+                    <span className="absolute -top-2 -right-2 bg-amber-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
+                      2
+                    </span>
+                  </div>
+                  <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+                    Meet Your Local Guide
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    We connect you with a vetted local who knows how to turn
+                    your time into unforgettable stories.
+                  </p>
+                </div>
+              </div>
+              <div
+                className={`relative group transition-all duration-700 delay-300 ${
+                  howItWorksAnimation.isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-8"
+                }`}>
+                <div className="flex flex-col items-center text-center p-8 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 h-full">
+                  <div className="relative z-10 w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-amber-200 group-hover:scale-110 transition-all duration-300 shadow-md">
+                    <MapPin className="w-10 h-10 text-amber-800" />
+                    <span className="absolute -top-2 -right-2 bg-amber-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
+                      3
+                    </span>
+                  </div>
+                  <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+                    Experience Ethiopia
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    From coffee ceremonies to hidden gems, your guide handles
+                    everything for an authentic adventure.
+                  </p>
+                </div>
+              </div>
             </div>
+          </div>
 
-            <div
-              className={`text-center group transition-all duration-700 delay-300 ${
-                howItWorksAnimation.isVisible
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-8"
-              }`}>
-              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-amber-100 group-hover:scale-110 transition-all duration-300 shadow-md">
-                <MapPin className="w-8 h-8 text-amber-800" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                Go Live the Experience
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                From traditional coffee ceremonies to spontaneous street
-                explorations, your guide handles everything.
-              </p>
-            </div>
+          <div className="mt-16 text-center">
+            <Button
+              onClick={() => scrollToSection("packages")}
+              className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-4 text-lg rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+              Start Your Journey
+            </Button>
           </div>
         </div>
       </section>
 
       <section
         ref={benefitsAnimation.ref}
-        className={`py-20 bg-white transition-all duration-1000 ${
+        className={`py-20 bg-gray-50 transition-all duration-1000 ${
           benefitsAnimation.isVisible
             ? "opacity-100 translate-y-0"
             : "opacity-0 translate-y-8"
@@ -256,11 +288,17 @@ export default function HomePage() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="border-0 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300">
+            <Card className="border-0 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 overflow-hidden">
+              <div className="relative h-48 w-full">
+                <Image
+                  src="/images/food-experience.jpeg"
+                  alt="Authentic Ethiopian food experience"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
               <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <Utensils className="w-6 h-6 text-amber-800" />
-                </div>
                 <h3 className="font-semibold text-gray-900 mb-2">
                   Authentic Food Experiences
                 </h3>
@@ -270,11 +308,16 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300">
+            <Card className="border-0 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 overflow-hidden">
+              <div className="relative h-48 w-full">
+                <Image
+                  src="/images/hidden-streets.jpeg"
+                  alt="Hidden streets of Ethiopia"
+                  fill
+                  className="object-cover"
+                />
+              </div>
               <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <Map className="w-6 h-6 text-amber-800" />
-                </div>
                 <h3 className="font-semibold text-gray-900 mb-2">
                   Hidden Local Spots
                 </h3>
@@ -284,12 +327,16 @@ export default function HomePage() {
                 </p>
               </CardContent>
             </Card>
-
-            <Card className="border-0 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300">
+            <Card className="border-0 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 overflow-hidden">
+              <div className="relative h-48 w-full">
+                <Image
+                  src="/images/cultural-stories.jpeg"
+                  alt="Ethiopian cultural stories"
+                  fill
+                  className="object-cover"
+                />
+              </div>
               <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <Heart className="w-6 h-6 text-amber-800" />
-                </div>
                 <h3 className="font-semibold text-gray-900 mb-2">
                   Cultural Stories
                 </h3>
@@ -299,11 +346,16 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300">
+            <Card className="border-0 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 overflow-hidden">
+              <div className="relative h-48 w-full">
+                <Image
+                  src="/images/stress-free.jpeg"
+                  alt="Stress-free travel planning"
+                  fill
+                  className="object-cover"
+                />
+              </div>
               <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <Shield className="w-6 h-6 text-amber-800" />
-                </div>
                 <h3 className="font-semibold text-gray-900 mb-2">
                   Stress-Free Planning
                 </h3>
@@ -313,11 +365,16 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300">
+            <Card className="border-0 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 overflow-hidden">
+              <div className="relative h-48 w-full">
+                <Image
+                  src="/images/personalized.png"
+                  alt="Personalized travel experience"
+                  fill
+                  className="object-cover"
+                />
+              </div>
               <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <Users className="w-6 h-6 text-amber-800" />
-                </div>
                 <h3 className="font-semibold text-gray-900 mb-2">
                   Personalized Experience
                 </h3>
@@ -327,11 +384,16 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300">
+            <Card className="border-0 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 overflow-hidden">
+              <div className="relative h-48 w-full">
+                <Image
+                  src="/images/insider-view.jpeg"
+                  alt="Insider's view of Ethiopia"
+                  fill
+                  className="object-cover"
+                />
+              </div>
               <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <Camera className="w-6 h-6 text-amber-800" />
-                </div>
                 <h3 className="font-semibold text-gray-900 mb-2">
                   Insider&apos;s View
                 </h3>
@@ -344,20 +406,23 @@ export default function HomePage() {
         </div>
       </section>
 
-      
-     <section
+      <section
         id="packages"
         ref={packagesAnimation.ref}
-        className={`py-20 bg-amber-50 transition-all duration-1000 ${
+        className={`py-20 bg-gray-50 transition-all duration-1000 ${
           packagesAnimation.isVisible
             ? "opacity-100 translate-y-0"
             : "opacity-0 translate-y-8"
         }`}>
         <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-4xl font-bold text-gray-900 mb-8">Our Packages</h2>
-          <p className="text-xl text-gray-600 mb-16 text-center">
-            Choose the perfect experience for your Ethiopian adventure
-          </p>
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Our Packages
+            </h2>
+            <p className="text-gray-600 text-lg">
+              Choose your perfect experience
+            </p>
+          </div>
 
           {loading && (
             <div className="text-center py-12">
@@ -371,52 +436,113 @@ export default function HomePage() {
             </div>
           )}
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {packages.map((pkg) => {
-              const priceOption = getPriceOption(pkg);
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {packages.map((pkg, index) => {
+              const priceKeys = Object.keys(pkg.Price).filter(
+                (key) => key !== "Regular"
+              );
+              const isPopular = index === 1;
+
               return (
-                <Card 
+                <div
                   key={pkg.id}
-                  className="border-0 shadow-lg hover:shadow-xl transition-all duration-300"
-                >
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                  className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-8 relative ${
+                    isPopular
+                      ? "bg-gradient-to-br from-amber-600 to-amber-800 transform scale-105"
+                      : ""
+                  }`}>
+                  {isPopular && (
+                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                      <span className="bg-orange-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                        Most Popular
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="text-center">
+                    <h3
+                      className={`text-2xl font-bold mb-2 ${
+                        isPopular ? "text-white" : "text-gray-900"
+                      }`}>
                       {pkg.name}
                     </h3>
-                    
-                    <ul className="space-y-3 mb-6">
-                      {pkg.inclusions.map((item, index) => (
-                        <li key={index} className="flex items-start">
-                          <Star className="w-4 h-4 mt-1 mr-2 text-amber-600 flex-shrink-0" />
-                          <span className="text-gray-700">{item}</span>
+
+                    <div className="mb-6 space-y-2">
+                      <div>
+                        <span
+                          className={`text-3xl font-bold ${
+                            isPopular ? "text-white" : "text-gray-900"
+                          }`}>
+                          {pkg.Price.Regular}
+                        </span>
+                        <p
+                          className={`text-sm ${
+                            isPopular ? "text-amber-100" : "text-gray-500"
+                          }`}>
+                          Basic package
+                        </p>
+                      </div>
+
+                      {priceKeys.map((key) => (
+                        <div
+                          key={key}
+                          className={`mt-3 p-2 rounded-lg ${
+                            isPopular ? "bg-white/10" : "bg-amber-50"
+                          }`}>
+                          <span
+                            className={`text-xl font-semibold ${
+                              isPopular ? "text-white" : "text-amber-800"
+                            }`}>
+                            {pkg.Price[key]}
+                          </span>
+                          <p
+                            className={`text-xs ${
+                              isPopular ? "text-amber-100" : "text-amber-600"
+                            }`}>
+                            {key}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <ul className="space-y-4 mb-8 text-left">
+                      {pkg.inclusions.map((item, i) => (
+                        <li key={i} className="flex items-start">
+                          <div
+                            className={`w-5 h-5 rounded-full flex items-center justify-center mt-0.5 mr-3 flex-shrink-0 ${
+                              isPopular ? "bg-white/20" : "bg-amber-100"
+                            }`}>
+                            <div
+                              className={`w-2 h-2 rounded-full ${
+                                isPopular ? "bg-white" : "bg-amber-600"
+                              }`}></div>
+                          </div>
+                          <span
+                            className={
+                              isPopular ? "text-white" : "text-gray-700"
+                            }>
+                            {item}
+                          </span>
                         </li>
                       ))}
                     </ul>
 
-                    <div className="mb-6">
-                      <div className="text-3xl font-bold text-amber-800">
-                        {pkg.Price.Regular}
-                      </div>
-                      {priceOption && (
-                        <div className="mt-2 p-3 bg-amber-100 rounded-lg">
-                          <div className="font-semibold text-amber-800">
-                            {priceOption}: {pkg.Price[priceOption]}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    <Button className="w-full bg-amber-800 hover:bg-amber-900 text-white rounded-lg py-6 text-lg">
+                    <Button
+                      className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 ${
+                        isPopular
+                          ? "bg-white text-amber-800 hover:bg-amber-50"
+                          : "bg-amber-800 hover:bg-amber-900 text-white"
+                      }`}>
                       Book Now
                     </Button>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               );
             })}
           </div>
         </div>
       </section>
-      
+
       <Footer />
     </div>
   );
