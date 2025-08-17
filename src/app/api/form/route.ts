@@ -1,4 +1,3 @@
-// app/api/data/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
@@ -19,7 +18,6 @@ export async function POST(request: Request) {
       language_codes,  // array of language codes like ["en", "am"]
     } = body;
 
-    // Validate required fields
     if (!name || !email || !packageId) {
       return NextResponse.json(
         { error: "Name, email, and packageId are required" },
@@ -39,7 +37,7 @@ export async function POST(request: Request) {
         special_interest,
         Additional_note,
         package: {
-          connect: { id: packageId }, // connect single package
+          connect: { id: packageId }, 
         },
         language: {
           connect: language_codes?.map((code: string) => ({ code })),
@@ -58,13 +56,13 @@ export async function POST(request: Request) {
   }
 }
 
-// GET: Fetch all user forms (for admin)
+// GET: Fetch all user forms 
 export async function GET() {
   try {
     const allData = await prisma.data.findMany({
       include: {
-        package: true,   // include selected package
-        language: true,  // include selected languages
+        package: true,   
+        language: true, 
       },
       orderBy: { id: "desc" },
     });
