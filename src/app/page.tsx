@@ -85,7 +85,7 @@ export default function HomePage() {
     };
   }, []);
 
-  const aboutAnimation = useScrollAnimation();
+
   const howItWorksAnimation = useScrollAnimation();
   const benefitsAnimation = useScrollAnimation();
   const packagesAnimation = useScrollAnimation();
@@ -103,7 +103,7 @@ export default function HomePage() {
                 currentImageIndex === index ? "opacity-100" : "opacity-0"
               }`}>
               <Image
-                src={src}
+                src={src || "/placeholder.svg"}
                 alt={`Ethiopia landscape ${index + 1}`}
                 fill
                 style={{ objectFit: "cover", objectPosition: "center" }}
@@ -139,37 +139,6 @@ export default function HomePage() {
       </section>
 
       <section
-        id="about"
-        ref={aboutAnimation.ref}
-        className={`py-20 bg-gray-50 transition-all duration-1000 ${
-          aboutAnimation.isVisible
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-8"
-        }`}>
-        <div className="max-w-3xl mx-auto px-6 text-center">
-          {" "}
-          <div>
-            <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              What Visitopia Is
-            </h2>
-            <div className="space-y-6">
-              {" "}
-              <p className="text-lg text-gray-700 leading-relaxed">
-                Visitopia connects travelers with local guides for real, human
-                experiences in Ethiopia.
-              </p>
-              <p className="text-lg text-gray-700 leading-relaxed">
-                You tell us how much time you have, we match you with someone
-                who knows the city like the back of their hand. Together, you
-                skip the typical tourist trail and step straight into the heart
-                of Ethiopian life.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section
         id="how-it-works"
         ref={howItWorksAnimation.ref}
         className={`py-20 bg-gray-50 transition-all duration-1000 ${
@@ -197,7 +166,7 @@ export default function HomePage() {
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-8"
                 }`}>
-                <div className="flex flex-col items-center text-center p-8 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 h-full">
+                <div className="flex flex-col items-center text-center p-8 bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 h-full">
                   <div className="relative z-10 w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-amber-200 group-hover:scale-110 transition-all duration-300 shadow-md">
                     <Clock className="w-10 h-10 text-amber-800" />
                     <span className="absolute -top-2 -right-2 bg-amber-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
@@ -205,11 +174,10 @@ export default function HomePage() {
                     </span>
                   </div>
                   <h3 className="text-2xl font-semibold text-gray-900 mb-4">
-                    Tell Us Your Timeframe
+                    Tell us how much time you have
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Whether you have a few hours or a full day, we shape the
-                    experience to fit your schedule perfectly.
+                   Share your schedule and we&apos;ll plan the perfect experience
                   </p>
                 </div>
               </div>
@@ -219,7 +187,7 @@ export default function HomePage() {
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-8"
                 }`}>
-                <div className="flex flex-col items-center text-center p-8 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 h-full">
+                <div className="flex flex-col items-center text-center p-8 bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 h-full">
                   <div className="relative z-10 w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-amber-200 group-hover:scale-110 transition-all duration-300 shadow-md">
                     <Users className="w-10 h-10 text-amber-800" />
                     <span className="absolute -top-2 -right-2 bg-amber-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
@@ -227,11 +195,10 @@ export default function HomePage() {
                     </span>
                   </div>
                   <h3 className="text-2xl font-semibold text-gray-900 mb-4">
-                    Meet Your Local Guide
+                    We match you with a local guide
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    We connect you with a vetted local who knows how to turn
-                    your time into unforgettable stories.
+                    Get paired with someone who fits your interests perfectly.
                   </p>
                 </div>
               </div>
@@ -241,7 +208,7 @@ export default function HomePage() {
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-8"
                 }`}>
-                <div className="flex flex-col items-center text-center p-8 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 h-full">
+                <div className="flex flex-col items-center text-center p-8 bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 h-full">
                   <div className="relative z-10 w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-amber-200 group-hover:scale-110 transition-all duration-300 shadow-md">
                     <MapPin className="w-10 h-10 text-amber-800" />
                     <span className="absolute -top-2 -right-2 bg-amber-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
@@ -249,11 +216,10 @@ export default function HomePage() {
                     </span>
                   </div>
                   <h3 className="text-2xl font-semibold text-gray-900 mb-4">
-                    Experience Ethiopia
+                    Explore together and create memories
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    From coffee ceremonies to hidden gems, your guide handles
-                    everything for an authentic adventure.
+                   Enjoy stories, culture and moments you&apos;ll remember forever
                   </p>
                 </div>
               </div>
@@ -461,7 +427,7 @@ export default function HomePage() {
 
                   <div className="text-center">
                     <h3
-                      className={`text-2xl font-bold mb-2 ${
+                      className={`text-lg font-bold mb-2 tracking-wide ${
                         isPopular ? "text-white" : "text-gray-900"
                       }`}>
                       {pkg.name}
@@ -470,8 +436,8 @@ export default function HomePage() {
                     <div className="mb-6 space-y-2">
                       <div>
                         <span
-                          className={`text-3xl font-bold ${
-                            isPopular ? "text-white" : "text-gray-900"
+                          className={`text-4xl font-extrabold ${
+                            isPopular ? "text-white" : "text-amber-800"
                           }`}>
                           {pkg.Price.Regular}
                         </span>
@@ -486,11 +452,11 @@ export default function HomePage() {
                       {priceKeys.map((key) => (
                         <div
                           key={key}
-                          className={`mt-3 p-2 rounded-lg ${
+                          className={`mt-3 p-3 rounded-lg ${
                             isPopular ? "bg-white/10" : "bg-amber-50"
                           }`}>
                           <span
-                            className={`text-xl font-semibold ${
+                            className={`text-2xl font-bold ${
                               isPopular ? "text-white" : "text-amber-800"
                             }`}>
                             {pkg.Price[key]}
