@@ -14,8 +14,54 @@ datasource db {
 }
 
 model Package {
-  id             Int @id @default(autoincrement())
-  name           String
-  inclusions     Json
-  Price          Json
+  id         Int    @id @default(autoincrement())
+  name       String
+  inclusions Json
+  Price      Json
+  users      Data[] // all users who selected this package
+}
+
+model Data {
+  id              Int       @id @default(autoincrement())
+  name            String
+  role            Role      @default(USER)
+  email           String
+  phone_number    Int
+  traveler_number Int
+  time_available  Time_Slot
+  packageId       Int       // foreign key to Package
+  package         Package   @relation(fields: [packageId], references: [id])
+  special_interest Special_Interest
+  Additional_note  String
+  language         Language[] @relation("UserLanguages")
+}
+
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Special_Interest {
+  FOOD
+  CULTURE
+  MUSIC
+  HISTORY
+  MARKETS
+  COFFEE
+  OTHER
+}
+
+enum Time_Slot {
+  FEW_HOURS
+  HALF_DAY
+  FULL_DAY
+}
+
+model Language {
+  id      Int    @id @default(autoincrement())
+  code    String @unique  
+  name    String  
+
+  users   Data[] @relation("UserLanguages") // many-to-many
 }
