@@ -12,9 +12,11 @@ export async function POST(request: Request) {
       traveler_number,
       role,
       time_available,
+      date_time,
       special_interest,
       Additional_note,
-      packageId,       // single package selected by user
+      packageId, 
+      Additional_preference,     // single package selected by user
       language_codes,  // array of language codes like ["en", "am"]
     } = body;
 
@@ -36,6 +38,8 @@ export async function POST(request: Request) {
         time_available,
         special_interest,
         Additional_note,
+        Additional_preference,
+        date_time:new Date(date_time),
         package: {
           connect: { id: packageId }, 
         },

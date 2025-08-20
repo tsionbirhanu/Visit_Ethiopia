@@ -22,18 +22,20 @@ model Package {
 }
 
 model Data {
-  id              Int       @id @default(autoincrement())
-  name            String
-  role            Role      @default(USER)
-  email           String
-  phone_number    Int
-  traveler_number Int
-  time_available  Time_Slot
-  packageId       Int       // foreign key to Package
-  package         Package   @relation(fields: [packageId], references: [id])
-  special_interest Special_Interest
-  Additional_note  String
-  language         Language[] @relation("UserLanguages")
+  id                       Int       @id @default(autoincrement())
+  name                     String
+  role                     Role      @default(USER)
+  email                    String
+  phone_number             String
+  traveler_number          Int
+  time_available           Time_Slot
+  date_time                DateTime
+  packageId                Int       // foreign key to Package
+  package                  Package   @relation(fields: [packageId], references: [id])
+  special_interest         Special_Interest
+  Additional_preference    String?
+  Additional_note          String
+  language                 Language[] @relation("UserLanguages")
 }
 
 
