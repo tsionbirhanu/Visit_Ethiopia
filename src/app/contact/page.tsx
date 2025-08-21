@@ -526,7 +526,7 @@ export default function ContactPage() {
                           onValueChange={(value) => field.onChange([value])}
                           value={field.value[0] || ""}>
                           <SelectTrigger className="mt-2 border-gray-300 focus:border-amber-500 focus:ring-amber-500">
-                            <SelectValue placeholder="Select preferred languages">
+                            <SelectValue placeholder="Select preferred language">
                               {field.value.length > 0
                                 ? languages.find((l) => l.code === field.value[0])?.name || ""
                                 : "Select languages"}
