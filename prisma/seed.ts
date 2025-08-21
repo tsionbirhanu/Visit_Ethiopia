@@ -1,5 +1,5 @@
-const { PrismaClient } = require("@prisma/client");
-const ISO6391 = require("iso-639-1");
+import { PrismaClient } from "@prisma/client";
+import ISO6391 from "iso-639-1";
 
 const prisma = new PrismaClient();
 
