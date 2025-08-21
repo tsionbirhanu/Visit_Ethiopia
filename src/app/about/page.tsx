@@ -13,7 +13,7 @@ export default function AboutPage() {
     "/images/Lalibela4.jpg",
     "/images/hamer.png",
     "/images/addis.png",
-    "/images/fox.jpg",
+    "/images/tmket.jpg",
     "/images/tana.jpg",
     "/images/dallol.jpg",
   ]

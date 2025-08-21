@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     // Send email
     const data = await resend.emails.send({
       from: "onboarding@resend.dev", // verified domain or default
-      to: "21dagmawitnegash@gmail.com", // where you want to receive the form data
+      to: "visitopiacontact@gmail.com", // where you want to receive the form data
       subject: "New Tourist Request",
       html: `
         <h2>New Submission</h2>
