@@ -7,10 +7,11 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "seed": "prisma db seed"
+     "build": "next build",
+     "vercel-build": "prisma generate && next build",
+     "start": "next start",
+     "lint": "next lint",
+     "seed": "prisma db seed"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
