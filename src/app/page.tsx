@@ -85,7 +85,6 @@ export default function HomePage() {
     };
   }, []);
 
-
   const howItWorksAnimation = useScrollAnimation();
   const benefitsAnimation = useScrollAnimation();
   const packagesAnimation = useScrollAnimation();
@@ -177,7 +176,8 @@ export default function HomePage() {
                     Tell us how much time you have
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                   Share your schedule and we&apos;ll plan the perfect experience
+                    Share your schedule and we&apos;ll plan the perfect
+                    experience
                   </p>
                 </div>
               </div>
@@ -219,7 +219,8 @@ export default function HomePage() {
                     Explore together and create memories
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                   Enjoy stories, culture and moments you&apos;ll remember forever
+                    Enjoy stories, culture and moments you&apos;ll remember
+                    forever
                   </p>
                 </div>
               </div>
@@ -238,7 +239,7 @@ export default function HomePage() {
 
       <section
         ref={benefitsAnimation.ref}
-        className={`py-20 bg-gray-50 transition-all duration-1000 ${
+        className={`py-20 bg-white/95 transition-all duration-1000 ${
           benefitsAnimation.isVisible
             ? "opacity-100 translate-y-0"
             : "opacity-0 translate-y-8"
@@ -375,7 +376,7 @@ export default function HomePage() {
       <section
         id="packages"
         ref={packagesAnimation.ref}
-        className={`py-20 bg-gray-50 transition-all duration-1000 ${
+        className={`py-20 bg-white/95 transition-all duration-1000 ${
           packagesAnimation.isVisible
             ? "opacity-100 translate-y-0"
             : "opacity-0 translate-y-8"
@@ -412,7 +413,7 @@ export default function HomePage() {
               return (
                 <div
                   key={pkg.id}
-                  className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-8 relative ${
+                  className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-8 relative flex flex-col ${
                     isPopular
                       ? "bg-gradient-to-br from-amber-600 to-amber-800 transform scale-105"
                       : ""
@@ -425,82 +426,85 @@ export default function HomePage() {
                     </div>
                   )}
 
-                  <div className="text-center">
-                    <h3
-                      className={`text-lg font-bold mb-2 tracking-wide ${
-                        isPopular ? "text-white" : "text-gray-900"
-                      }`}>
-                      {pkg.name}
-                    </h3>
+                  <div className="flex-1 flex flex-col">
+                    <div className="text-center">
+                      <h3
+                        className={`text-lg font-bold mb-2 tracking-wide ${
+                          isPopular ? "text-white" : "text-gray-900"
+                        }`}>
+                        {pkg.name}
+                      </h3>
 
-                    <div className="mb-6 space-y-2">
-                      <div>
-                        <span
-                          className={`text-4xl font-extrabold ${
-                            isPopular ? "text-white" : "text-amber-800"
-                          }`}>
-                          {pkg.Price.Regular}
-                        </span>
-                        <p
-                          className={`text-sm ${
-                            isPopular ? "text-amber-100" : "text-gray-500"
-                          }`}>
-                          Basic package
-                        </p>
-                      </div>
-
-                      {priceKeys.map((key) => (
-                        <div
-                          key={key}
-                          className={`mt-3 p-3 rounded-lg ${
-                            isPopular ? "bg-white/10" : "bg-amber-50"
-                          }`}>
+                      <div className="mb-6 space-y-2">
+                        <div>
                           <span
-                            className={`text-2xl font-bold ${
+                            className={`text-4xl font-extrabold ${
                               isPopular ? "text-white" : "text-amber-800"
                             }`}>
-                            {pkg.Price[key]}
+                            {pkg.Price.Regular}
                           </span>
                           <p
-                            className={`text-xs ${
-                              isPopular ? "text-amber-100" : "text-amber-600"
+                            className={`text-sm ${
+                              isPopular ? "text-amber-100" : "text-gray-500"
                             }`}>
-                            {key}
+                            Basic package
                           </p>
                         </div>
-                      ))}
-                    </div>
 
-                    <ul className="space-y-4 mb-8 text-left">
-                      {pkg.inclusions.map((item, i) => (
-                        <li key={i} className="flex items-start">
+                        {priceKeys.map((key) => (
                           <div
-                            className={`w-5 h-5 rounded-full flex items-center justify-center mt-0.5 mr-3 flex-shrink-0 ${
-                              isPopular ? "bg-white/20" : "bg-amber-100"
+                            key={key}
+                            className={`mt-3 p-3 rounded-lg ${
+                              isPopular ? "bg-white/10" : "bg-amber-50"
                             }`}>
-                            <div
-                              className={`w-2 h-2 rounded-full ${
-                                isPopular ? "bg-white" : "bg-amber-600"
-                              }`}></div>
+                            <span
+                              className={`text-2xl font-bold ${
+                                isPopular ? "text-white" : "text-amber-800"
+                              }`}>
+                              {pkg.Price[key]}
+                            </span>
+                            <p
+                              className={`text-xs ${
+                                isPopular ? "text-amber-100" : "text-amber-600"
+                              }`}>
+                              {key}
+                            </p>
                           </div>
-                          <span
-                            className={
-                              isPopular ? "text-white" : "text-gray-700"
-                            }>
-                            {item}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
+                        ))}
+                      </div>
 
-                    <Button
-                      className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 ${
-                        isPopular
-                          ? "bg-white text-amber-800 hover:bg-amber-50"
-                          : "bg-amber-800 hover:bg-amber-900 text-white"
-                      }`}>
-                      Book Now
-                    </Button>
+                      <ul className="space-y-4 mb-8 text-left">
+                        {pkg.inclusions.map((item, i) => (
+                          <li key={i} className="flex items-start">
+                            <div
+                              className={`w-5 h-5 rounded-full flex items-center justify-center mt-0.5 mr-3 flex-shrink-0 ${
+                                isPopular ? "bg-white/20" : "bg-amber-100"
+                              }`}>
+                              <div
+                                className={`w-2 h-2 rounded-full ${
+                                  isPopular ? "bg-white" : "bg-amber-600"
+                                }`}></div>
+                            </div>
+                            <span
+                              className={
+                                isPopular ? "text-white" : "text-gray-700"
+                              }>
+                              {item}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="mt-auto">
+                      <Button
+                        className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 ${
+                          isPopular
+                            ? "bg-white text-amber-800 hover:bg-amber-50"
+                            : "bg-amber-800 hover:bg-amber-900 text-white"
+                        }`}>
+                        Book Now
+                      </Button>
+                    </div>
                   </div>
                 </div>
               );
