@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -18,26 +12,32 @@ model Package {
   name       String
   inclusions Json
   Price      Json
-  users      Data[] // all users who selected this package
+  users      Data[]
 }
 
 model Data {
-  id                       Int       @id @default(autoincrement())
-  name                     String
-  role                     Role      @default(USER)
-  email                    String
-  phone_number             String
-  traveler_number          Int
-  time_available           Time_Slot
-  date_time                DateTime
-  packageId                Int       // foreign key to Package
-  package                  Package   @relation(fields: [packageId], references: [id])
-  special_interest         Special_Interest
-  Additional_preference    String?
-  Additional_note          String
-  language                 Language[] @relation("UserLanguages")
+  id                    Int              @id @default(autoincrement())
+  name                  String
+  role                  Role             @default(USER)
+  email                 String
+  phone_number          String
+  traveler_number       Int
+  time_available        Time_Slot
+  special_interest      Special_Interest
+  Additional_note       String
+  packageId             Int
+  date_time             DateTime
+  Additional_preference String?
+  package               Package          @relation(fields: [packageId], references: [id])
+  language              Language[]       @relation("UserLanguages")
 }
 
+model Language {
+  id    Int    @id @default(autoincrement())
+  code  String @unique
+  name  String
+  users Data[] @relation("UserLanguages")
+}
 
 enum Role {
   USER
@@ -58,12 +58,4 @@ enum Time_Slot {
   FEW_HOURS
   HALF_DAY
   FULL_DAY
-}
-
-model Language {
-  id      Int    @id @default(autoincrement())
-  code    String @unique  
-  name    String  
-
-  users   Data[] @relation("UserLanguages") // many-to-many
 }
