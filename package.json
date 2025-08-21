@@ -2,13 +2,17 @@
   "name": "visit-ethiopia",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "seed": "node prisma/seed.ts"
-  },
+
+  "prisma": {
+  "seed": "ts-node prisma/seed.ts"
+},
+"scripts": {
+  "dev": "next dev",
+  "build": "next build",
+  "start": "next start",
+  "lint": "next lint",
+  "seed": "prisma db seed"
+},
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
     "@prisma/client": "^6.14.0",
@@ -42,7 +46,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^20.19.11",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
@@ -50,6 +54,7 @@
     "postcss": "^8",
     "prisma": "^6.14.0",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
   }
 }

@@ -24,6 +24,7 @@ type Package = {
 };
 
 type Language = {
+  id: number;
   code: string;
   name: string;
 };
@@ -33,7 +34,7 @@ export default function ContactPage() {
     name: "",
     email: "",
     phoneNumber: "",
-    travelerNumber: "", // Removed the default "1"
+    travelerNumber: "1",
     date: "",
     timeAvailable: "",
     languages: [] as string[],
@@ -45,6 +46,7 @@ export default function ContactPage() {
   const [packages, setPackages] = useState<Package[]>([]);
   const [languages, setLanguages] = useState<Language[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [languageError, setLanguageError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPackages = async () => {
@@ -66,19 +68,23 @@ export default function ContactPage() {
   useEffect(() => {
     const fetchLanguages = async () => {
       try {
-        const languagesRes = await fetch("/api/languages");
+        const languagesRes = await fetch("/api/language");
         if (languagesRes.ok) {
           const languagesData = await languagesRes.json();
           if (Array.isArray(languagesData)) {
             setLanguages(languagesData);
+            setLanguageError(null);
           } else {
             console.error("Languages data is not an array");
+            setLanguageError("Failed to load languages. Please refresh the page.");
           }
         } else {
           console.error("Failed to fetch languages:", languagesRes.statusText);
+          setLanguageError("Failed to load languages. Please try again later.");
         }
       } catch (error) {
         console.error("Error fetching languages:", error);
+        setLanguageError("Error loading languages. Please check your connection.");
       }
     };
     fetchLanguages();
@@ -108,23 +114,45 @@ export default function ContactPage() {
     });
   };
 
+  const validateForm = () => {
+    if (!formData.name.trim()) {
+      alert("Please enter your name");
+      return false;
+    }
+    if (!formData.email.trim()) {
+      alert("Please enter your email");
+      return false;
+    }
+    if (!formData.packageId) {
+      alert("Please select a package");
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    
+    if (!validateForm()) {
+      return;
+    }
 
+    setIsSubmitting(true);
     const dataToSend = {
       name: formData.name,
       email: formData.email,
-      phone_number: parseInt(formData.phoneNumber),
-      traveler_number: parseInt(formData.travelerNumber),
-      date: formData.date,
-      time_available: formData.timeAvailable.toUpperCase(),
+      phone_number: formData.phoneNumber || null,
+      traveler_number: formData.travelerNumber ? parseInt(formData.travelerNumber) : 1,
+      time_available: formData.timeAvailable || "FEW_HOURS",
+      date_time: formData.date ? new Date(formData.date).toISOString() : new Date().toISOString(),
+      special_interest: formData.specialInterests.length > 0 
+        ? formData.specialInterests[0].toUpperCase().replace(/ /g, "_")
+        : "OTHER",
+      Additional_note: formData.additionalNote || "",
       packageId: parseInt(formData.packageId),
       language_codes: formData.languages,
-      special_interests: formData.specialInterests.map((i) =>
-        i.toUpperCase().replace(/ /g, "_")
-      ),
-      Additional_note: formData.additionalNote,
+      Additional_preference: formData.specialInterests.join(", "),
+      role: "USER" 
     };
 
     try {
@@ -139,12 +167,28 @@ export default function ContactPage() {
       const result = await response.json();
 
       if (response.ok) {
+        try {
+          await fetch("/api/send_email", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              ...dataToSend,
+              package_selection: [formData.packageId],
+              date_time: dataToSend.date_time
+            }),
+          });
+        } catch (emailError) {
+          console.error("Email sending failed, but form was submitted:", emailError);
+        }
+
         alert("Thank you for your submission! We will contact you soon.");
         setFormData({
           name: "",
           email: "",
           phoneNumber: "",
-          travelerNumber: "",
+          travelerNumber: "1",
           date: "",
           timeAvailable: "",
           languages: [],
@@ -316,6 +360,7 @@ export default function ContactPage() {
                         setFormData((prev) => ({ ...prev, phoneNumber: e.target.value }))
                       }
                       className="mt-2 border-gray-300 focus:border-amber-500 focus:ring-amber-500"
+                      placeholder="+251 900 000 000"
                     />
                   </div>
                   <div>
@@ -414,24 +459,28 @@ export default function ContactPage() {
                   <Label className="text-gray-700 font-semibold">
                     Language Preference
                   </Label>
-                  <div className="mt-2 space-y-2 max-h-60 overflow-y-auto p-2 border rounded-lg">
-                    {languages.map((language) => (
-                      <div key={language.code} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`lang-${language.code}`}
-                          checked={formData.languages.includes(language.code)}
-                          onCheckedChange={() => handleLanguageChange(language.code)}
-                          className="border-gray-300 data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600"
-                        />
-                        <Label
-                          htmlFor={`lang-${language.code}`}
-                          className="text-sm text-gray-700"
-                        >
-                          {language.name}
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
+                  {languageError ? (
+                    <div className="mt-2 text-red-500 text-sm">{languageError}</div>
+                  ) : (
+                    <div className="mt-2 space-y-2 max-h-60 overflow-y-auto p-2 border rounded-lg">
+                      {languages.map((language) => (
+                        <div key={language.code} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`lang-${language.code}`}
+                            checked={formData.languages.includes(language.code)}
+                            onCheckedChange={() => handleLanguageChange(language.code)}
+                            className="border-gray-300 data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600"
+                          />
+                          <Label
+                            htmlFor={`lang-${language.code}`}
+                            className="text-sm text-gray-700 cursor-pointer"
+                          >
+                            {language.name}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div>
@@ -449,7 +498,7 @@ export default function ContactPage() {
                         />
                         <Label
                           htmlFor={`interest-${interest}`}
-                          className="text-sm font-medium text-gray-700"
+                          className="text-sm font-medium text-gray-700 cursor-pointer"
                         >
                           {interest}
                         </Label>

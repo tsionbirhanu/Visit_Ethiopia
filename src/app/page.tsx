@@ -141,7 +141,7 @@ export default function HomePage() {
       <section
         id="how-it-works"
         ref={howItWorksAnimation.ref}
-        className={`py-20 bg-gray-50 transition-all duration-1000 ${
+        className={`py-20 bg-gradient-to-br from-amber-50 to-orange-50 transition-all duration-1000 ${
           howItWorksAnimation.isVisible
             ? "opacity-100 translate-y-0"
             : "opacity-0 translate-y-8"

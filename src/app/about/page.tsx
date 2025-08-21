@@ -59,8 +59,7 @@ export default function AboutPage() {
           <div className="absolute inset-0 bg-black/40"></div>
         </div>
 
-        {/* About us */}
-        <div className="relative z-10 flex items-center justify-center h-full">
+      <div className="relative z-10 flex items-center justify-center h-full">
           <div className="text-center text-white px-4">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">About us</h1>
             <p className="text-xl md:text-2xl font-light max-w-2xl mx-auto opacity-90">
@@ -69,8 +68,6 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-
-      {/* Why Visitopia Exists */}
       <section className="py-20 bg-white">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">Why Visitopia Exists</h2>
@@ -85,8 +82,6 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-
-      {/* How We Work */}
       <section className="py-20 bg-gradient-to-br from-amber-50 to-orange-50">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-4xl md:text-5xl font-bold text-center text-gray-900 mb-16">How We Work</h2>
