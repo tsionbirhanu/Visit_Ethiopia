@@ -1,65 +1,199 @@
-"use client"
+"use client";
 
-import type React from "react"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Mail, Phone, Instagram, Facebook, MessageCircle } from "lucide-react";
+import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Mail, Phone, Instagram, Facebook, MessageCircle } from "lucide-react"
-import Navbar from "@/components/navbar"
-import Footer from "@/components/footer"
+type Package = {
+  id: number;
+  name: string;
+};
+
+type Language = {
+  code: string;
+  name: string;
+};
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
-    fullName: "",
+    name: "",
     email: "",
-    phone: "",
-    travelers: "",
-    preferredDate: "",
+    phoneNumber: "",
+    travelerNumber: "", // Removed the default "1"
+    date: "",
     timeAvailable: "",
-    language: "",
-    package: "",
+    languages: [] as string[],
+    packageId: "",
     specialInterests: [] as string[],
-    additionalNotes: "",
-  })
+    additionalNote: "",
+  });
 
-  const handleInterestChange = (interest: string, checked: boolean) => {
-    setFormData((prev) => ({
-      ...prev,
-      specialInterests: checked
-        ? [...prev.specialInterests, interest]
-        : prev.specialInterests.filter((i) => i !== interest),
-    }))
-  }
+  const [packages, setPackages] = useState<Package[]>([]);
+  const [languages, setLanguages] = useState<Language[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Handle form submission here
-    console.log("Form submitted:", formData)
-  }
+  useEffect(() => {
+    const fetchPackages = async () => {
+      try {
+        const packagesRes = await fetch("/api/packages");
+        if (packagesRes.ok) {
+          const packagesData = await packagesRes.json();
+          setPackages(packagesData);
+        } else {
+          console.error("Failed to fetch packages:", packagesRes.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching packages:", error);
+      }
+    };
+    fetchPackages();
+  }, []);
 
-  const interests = ["Food", "Culture", "Music", "History", "Markets", "Coffee", "Other"]
+  useEffect(() => {
+    const fetchLanguages = async () => {
+      try {
+        const languagesRes = await fetch("/api/languages");
+        if (languagesRes.ok) {
+          const languagesData = await languagesRes.json();
+          if (Array.isArray(languagesData)) {
+            setLanguages(languagesData);
+          } else {
+            console.error("Languages data is not an array");
+          }
+        } else {
+          console.error("Failed to fetch languages:", languagesRes.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching languages:", error);
+      }
+    };
+    fetchLanguages();
+  }, []);
+
+  const handleLanguageChange = (languageCode: string) => {
+    setFormData((prev) => {
+      const alreadySelected = prev.languages.includes(languageCode);
+      return {
+        ...prev,
+        languages: alreadySelected
+          ? prev.languages.filter((code) => code !== languageCode)
+          : [...prev.languages, languageCode],
+      };
+    });
+  };
+
+  const handleInterestChange = (interest: string) => {
+    setFormData((prev) => {
+      const isSelected = prev.specialInterests.includes(interest);
+      return {
+        ...prev,
+        specialInterests: isSelected
+          ? prev.specialInterests.filter((i) => i !== interest)
+          : [...prev.specialInterests, interest],
+      };
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    const dataToSend = {
+      name: formData.name,
+      email: formData.email,
+      phone_number: parseInt(formData.phoneNumber),
+      traveler_number: parseInt(formData.travelerNumber),
+      date: formData.date,
+      time_available: formData.timeAvailable.toUpperCase(),
+      packageId: parseInt(formData.packageId),
+      language_codes: formData.languages,
+      special_interests: formData.specialInterests.map((i) =>
+        i.toUpperCase().replace(/ /g, "_")
+      ),
+      Additional_note: formData.additionalNote,
+    };
+
+    try {
+      const response = await fetch("/api/form", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataToSend),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert("Thank you for your submission! We will contact you soon.");
+        setFormData({
+          name: "",
+          email: "",
+          phoneNumber: "",
+          travelerNumber: "",
+          date: "",
+          timeAvailable: "",
+          languages: [],
+          packageId: "",
+          specialInterests: [],
+          additionalNote: "",
+        });
+      } else {
+        throw new Error(result.error || "Submission failed");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert(`An error occurred: ${error instanceof Error ? error.message : "Please try again."}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const interests = [
+    "Food",
+    "Culture",
+    "Music",
+    "History",
+    "Markets",
+    "Coffee",
+    "Other",
+  ];
+  const travelerOptions = ["1", "2", "3-5", "6-10", "10+"];
+  const timeOptions = [
+    { value: "FEW_HOURS", label: "Few hours" },
+    { value: "HALF_DAY", label: "Half day" },
+    { value: "FULL_DAY", label: "Full day" },
+  ];
 
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
 
-      {/* Contact Info Section */}
       <section className="pt-20 pb-16 bg-gradient-to-br from-amber-50 to-orange-50">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">Get In Touch</h1>
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+              Get In Touch
+            </h1>
             <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
               Ready to explore Ethiopia with a local? We&apos;d love to hear from you!
             </p>
           </div>
 
-          {/* Contact Information Cards */}
           <div className="grid md:grid-cols-3 gap-8 mb-8">
             <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
               <CardContent className="p-6 text-center">
@@ -123,14 +257,15 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* Contact Form Section */}
       <section className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Plan Your Visitopia Experience</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Plan Your Visitopia Experience
+            </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Tell us about your travel plans and we&apos;ll match you with the perfect local guide for an authentic
-              Ethiopian adventure.
+              Tell us about your travel plans and we&apos;ll match you with the
+              perfect local guide for an authentic Ethiopian adventure.
             </p>
           </div>
 
@@ -139,13 +274,15 @@ export default function ContactPage() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="fullName" className="text-gray-700 font-semibold">
+                    <Label htmlFor="name" className="text-gray-700 font-semibold">
                       Full Name *
                     </Label>
                     <Input
-                      id="fullName"
-                      value={formData.fullName}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, fullName: e.target.value }))}
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData((prev) => ({ ...prev, name: e.target.value }))
+                      }
                       className="mt-2 border-gray-300 focus:border-amber-500 focus:ring-amber-500"
                       required
                     />
@@ -158,7 +295,9 @@ export default function ContactPage() {
                       id="email"
                       type="email"
                       value={formData.email}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({ ...prev, email: e.target.value }))
+                      }
                       className="mt-2 border-gray-300 focus:border-amber-500 focus:ring-amber-500"
                       required
                     />
@@ -167,112 +306,151 @@ export default function ContactPage() {
 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="phone" className="text-gray-700 font-semibold">
+                    <Label htmlFor="phoneNumber" className="text-gray-700 font-semibold">
                       Phone Number (WhatsApp if available)
                     </Label>
                     <Input
-                      id="phone"
-                      value={formData.phone}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
+                      id="phoneNumber"
+                      value={formData.phoneNumber}
+                      onChange={(e) =>
+                        setFormData((prev) => ({ ...prev, phoneNumber: e.target.value }))
+                      }
                       className="mt-2 border-gray-300 focus:border-amber-500 focus:ring-amber-500"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="travelers" className="text-gray-700 font-semibold">
+                    <Label htmlFor="travelerNumber" className="text-gray-700 font-semibold">
                       Number of Travelers
                     </Label>
-                    <Select onValueChange={(value) => setFormData((prev) => ({ ...prev, travelers: value }))}>
+                    <Select
+                      onValueChange={(value) =>
+                        setFormData((prev) => ({ ...prev, travelerNumber: value }))
+                      }
+                      value={formData.travelerNumber}
+                    >
                       <SelectTrigger className="mt-2 border-gray-300 focus:border-amber-500 focus:ring-amber-500">
                         <SelectValue placeholder="Select number of travelers" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="1">1 Traveler</SelectItem>
-                        <SelectItem value="2">2 Travelers</SelectItem>
-                        <SelectItem value="3-5">3-5 Travelers</SelectItem>
-                        <SelectItem value="6-10">6-10 Travelers</SelectItem>
-                        <SelectItem value="10+">10+ Travelers</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <Label htmlFor="preferredDate" className="text-gray-700 font-semibold">
-                      Preferred Date & Time
-                    </Label>
-                    <Input
-                      id="preferredDate"
-                      type="datetime-local"
-                      value={formData.preferredDate}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, preferredDate: e.target.value }))}
-                      className="mt-2 border-gray-300 focus:border-amber-500 focus:ring-amber-500"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="timeAvailable" className="text-gray-700 font-semibold">
-                      Time Available
-                    </Label>
-                    <Select onValueChange={(value) => setFormData((prev) => ({ ...prev, timeAvailable: value }))}>
-                      <SelectTrigger className="mt-2 border-gray-300 focus:border-amber-500 focus:ring-amber-500">
-                        <SelectValue placeholder="Select time available" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="few-hours">Few hours</SelectItem>
-                        <SelectItem value="half-day">Half day</SelectItem>
-                        <SelectItem value="full-day">Full day</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <Label htmlFor="language" className="text-gray-700 font-semibold">
-                      Language Preference
-                    </Label>
-                    <Select onValueChange={(value) => setFormData((prev) => ({ ...prev, language: value }))}>
-                      <SelectTrigger className="mt-2 border-gray-300 focus:border-amber-500 focus:ring-amber-500">
-                        <SelectValue placeholder="Select language preference" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="english">English</SelectItem>
-                        <SelectItem value="amharic">Amharic</SelectItem>
-                        <SelectItem value="oromo">Oromo</SelectItem>
-                        <SelectItem value="tigrinya">Tigrinya</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="package" className="text-gray-700 font-semibold">
-                      Package Selection
-                    </Label>
-                    <Select onValueChange={(value) => setFormData((prev) => ({ ...prev, package: value }))}>
-                      <SelectTrigger className="mt-2 border-gray-300 focus:border-amber-500 focus:ring-amber-500">
-                        <SelectValue placeholder="Select a package" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="essential">Essential Pass</SelectItem>
-                        <SelectItem value="explorer">Explorer Day</SelectItem>
-                        <SelectItem value="cultural">Full Cultural Immersion</SelectItem>
+                        {travelerOptions.map((option) => (
+                          <SelectItem key={option} value={option}>
+                            {option === "1" ? "1 Traveler" : `${option} Travelers`}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
 
                 <div>
-                  <Label className="text-gray-700 font-semibold">Special Interests</Label>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-3">
+                  <h3 className="text-gray-700 font-semibold mb-2">
+                    Preferred Date & Time
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <Label htmlFor="date" className="sr-only">
+                        Preferred Date
+                      </Label>
+                      <Input
+                        id="date"
+                        type="date"
+                        value={formData.date}
+                        onChange={(e) =>
+                          setFormData((prev) => ({ ...prev, date: e.target.value }))
+                        }
+                        className="mt-2 border-gray-300 focus:border-amber-500 focus:ring-amber-500"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="timeAvailable" className="sr-only">
+                        Time Available
+                      </Label>
+                      <Select
+                        onValueChange={(value) =>
+                          setFormData((prev) => ({ ...prev, timeAvailable: value }))
+                        }
+                        value={formData.timeAvailable}
+                      >
+                        <SelectTrigger className="mt-2 border-gray-300 focus:border-amber-500 focus:ring-amber-500">
+                          <SelectValue placeholder="Select time available" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {timeOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="package" className="text-gray-700 font-semibold">
+                    Package Selection *
+                  </Label>
+                  <Select
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, packageId: value }))
+                    }
+                    value={formData.packageId}
+                    required
+                  >
+                    <SelectTrigger className="mt-2 border-gray-300 focus:border-amber-500 focus:ring-amber-500">
+                      <SelectValue placeholder="Select a package" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {packages.map((pkg) => (
+                        <SelectItem key={pkg.id} value={pkg.id.toString()}>
+                          {pkg.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label className="text-gray-700 font-semibold">
+                    Language Preference
+                  </Label>
+                  <div className="mt-2 space-y-2 max-h-60 overflow-y-auto p-2 border rounded-lg">
+                    {languages.map((language) => (
+                      <div key={language.code} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`lang-${language.code}`}
+                          checked={formData.languages.includes(language.code)}
+                          onCheckedChange={() => handleLanguageChange(language.code)}
+                          className="border-gray-300 data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600"
+                        />
+                        <Label
+                          htmlFor={`lang-${language.code}`}
+                          className="text-sm text-gray-700"
+                        >
+                          {language.name}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-gray-700 font-semibold">
+                    Special Interests
+                  </Label>
+                  <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 gap-4">
                     {interests.map((interest) => (
                       <div key={interest} className="flex items-center space-x-2">
                         <Checkbox
-                          id={interest}
+                          id={`interest-${interest}`}
                           checked={formData.specialInterests.includes(interest)}
-                          onCheckedChange={(checked) => handleInterestChange(interest, checked as boolean)}
+                          onCheckedChange={() => handleInterestChange(interest)}
                           className="border-gray-300 data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600"
                         />
-                        <Label htmlFor={interest} className="text-sm text-gray-700">
+                        <Label
+                          htmlFor={`interest-${interest}`}
+                          className="text-sm font-medium text-gray-700"
+                        >
                           {interest}
                         </Label>
                       </div>
@@ -281,13 +459,15 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="additionalNotes" className="text-gray-700 font-semibold">
+                  <Label htmlFor="additionalNote" className="text-gray-700 font-semibold">
                     Additional Notes
                   </Label>
                   <Textarea
-                    id="additionalNotes"
-                    value={formData.additionalNotes}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, additionalNotes: e.target.value }))}
+                    id="additionalNote"
+                    value={formData.additionalNote}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, additionalNote: e.target.value }))
+                    }
                     placeholder="Anything you'd like us to know..."
                     className="mt-2 border-gray-300 focus:border-amber-500 focus:ring-amber-500 min-h-[100px]"
                   />
@@ -297,8 +477,9 @@ export default function ContactPage() {
                   <Button
                     type="submit"
                     className="w-full bg-amber-600 hover:bg-amber-700 text-white py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                    disabled={isSubmitting}
                   >
-                    Send My Request
+                    {isSubmitting ? "Sending..." : "Send My Request"}
                   </Button>
                   <p className="text-sm text-gray-500 text-center mt-4">
                     Don&apos;t worry, your details are safe with us. We&apos;ll only use them to plan your adventure.
@@ -312,5 +493,5 @@ export default function ContactPage() {
 
       <Footer />
     </div>
-  )
+  );
 }
