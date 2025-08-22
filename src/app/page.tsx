@@ -8,6 +8,8 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+
 
 interface Package {
   id: number;
@@ -33,6 +35,8 @@ export default function HomePage() {
   const [packages, setPackages] = useState<Package[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+
 
   const taglines = [
     "12 Hours. One Adventure. Let's Go.",
@@ -495,8 +499,10 @@ export default function HomePage() {
                         ))}
                       </ul>
                     </div>
+
                     <div className="mt-auto">
                       <Button
+                        onClick={() => router.push("/contact")}
                         className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 ${
                           isPopular
                             ? "bg-white text-amber-800 hover:bg-amber-50"

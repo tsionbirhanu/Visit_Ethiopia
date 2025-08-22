@@ -338,6 +338,7 @@ export default function ContactPage() {
                     <Input
                       id="name"
                       {...register("name")}
+                      placeholder="Enter your full name"
                       className="mt-2 border-gray-300 focus:border-amber-500 focus:ring-amber-500"
                     />
                     {errors.name && (
@@ -356,6 +357,7 @@ export default function ContactPage() {
                       id="email"
                       type="email"
                       {...register("email")}
+                      placeholder="your.email@gmail.com"
                       className="mt-2 border-gray-300 focus:border-amber-500 focus:ring-amber-500"
                     />
                     {errors.email && (
@@ -526,7 +528,7 @@ export default function ContactPage() {
                           onValueChange={(value) => field.onChange([value])}
                           value={field.value[0] || ""}>
                           <SelectTrigger className="mt-2 border-gray-300 focus:border-amber-500 focus:ring-amber-500">
-                            <SelectValue placeholder="Select preferred language">
+                            <SelectValue placeholder="Select preferred languages">
                               {field.value.length > 0
                                 ? languages.find((l) => l.code === field.value[0])?.name || ""
                                 : "Select languages"}
