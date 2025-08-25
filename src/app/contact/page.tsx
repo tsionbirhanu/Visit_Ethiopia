@@ -1,43 +1,37 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-  Mail,
-  Phone,
-  Instagram,
-  Facebook,
-  MessageCircle,
-} from "lucide-react"
-import Navbar from "@/components/navbar"
-import Footer from "@/components/footer"
-import { toast } from "sonner" 
-import { useForm, Controller } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Mail, Phone, Instagram, Facebook, MessageCircle, Send } from "lucide-react";
+import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
+import { toast } from "sonner";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 
 type Package = {
-  id: number
-  name: string
-}
+  id: number;
+  name: string;
+};
 
 type Language = {
-  id: number
-  code: string
-  name: string
-}
+  id: number;
+  code: string;
+  name: string;
+};
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Full Name is required." }),
@@ -47,9 +41,9 @@ const formSchema = z.object({
     .optional()
     .refine(
       (value) => {
-        if (!value) return true
-        const phoneRegex = /^\+?[0-9\s-()]{7,20}$/
-        return phoneRegex.test(value)
+        if (!value) return true;
+        const phoneRegex = /^\+?[0-9\s-()]{7,20}$/;
+        return phoneRegex.test(value);
       },
       { message: "Invalid phone number format." }
     ),
@@ -61,20 +55,28 @@ const formSchema = z.object({
   packageId: z.string().min(1, { message: "Package selection is required." }),
   specialInterests: z.array(z.string()).default([]),
   additionalNote: z.string().optional(),
-})
+});
 
-type FormValues = z.infer<typeof formSchema>
+type FormValues = z.infer<typeof formSchema>;
 
 export default function ContactPage() {
-  const [packages, setPackages] = useState<Package[]>([])
-  const [languages, setLanguages] = useState<Language[]>([])
-  const [languageError, setLanguageError] = useState<string | null>(null)
+  const [packages, setPackages] = useState<Package[]>([]);
+  const [languages, setLanguages] = useState<Language[]>([]);
+  const [languageError, setLanguageError] = useState<string | null>(null);
+  const [selectedPackageId, setSelectedPackageId] = useState<string | null>(
+    null
+  );
+  const [selectedPackageName, setSelectedPackageName] = useState<string | null>(
+    null
+  );
+  const [isLoadingPackages, setIsLoadingPackages] = useState(true);
 
   const {
     register,
     handleSubmit,
     control,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -91,74 +93,108 @@ export default function ContactPage() {
       specialInterests: [],
       additionalNote: "",
     },
-  })
+  });
+
+
+  useEffect(() => {
+  const savedPackageId = localStorage.getItem('selectedPackage');
+  if (savedPackageId) {
+    setSelectedPackageId(savedPackageId);
+    setValue('packageId', savedPackageId, { shouldValidate: true }); 
+  
+      if (packages.length > 0) {
+        const selectedPackage = packages.find(
+          (pkg) => pkg.id.toString() === savedPackageId
+        );
+        if (selectedPackage) {
+          setSelectedPackageName(selectedPackage.name);
+        }
+      }
+
+      localStorage.removeItem("selectedPackage");
+
+      toast.success("Package Selected!", {
+        description: "Your package has been pre-filled in the form.",
+      });
+    }
+  }, [setValue, packages]);
 
   useEffect(() => {
     const fetchPackages = async () => {
       try {
-        const packagesRes = await fetch("/api/packages")
+        setIsLoadingPackages(true);
+        const packagesRes = await fetch("/api/packages");
         if (packagesRes.ok) {
-          const packagesData = await packagesRes.json()
-          setPackages(packagesData)
+          const packagesData = await packagesRes.json();
+          setPackages(packagesData);
+
+          if (selectedPackageId && !selectedPackageName) {
+            const selectedPackage = packagesData.find(
+              (pkg: Package) => pkg.id.toString() === selectedPackageId
+            );
+            if (selectedPackage) {
+              setSelectedPackageName(selectedPackage.name);
+            }
+          }
         } else {
-          console.error("Failed to fetch packages:", packagesRes.statusText)
+          console.error("Failed to fetch packages:", packagesRes.statusText);
         }
       } catch (error) {
-        console.error("Error fetching packages:", error)
+        console.error("Error fetching packages:", error);
+      } finally {
+        setIsLoadingPackages(false);
       }
-    }
-    fetchPackages()
-  }, [])
+    };
+    fetchPackages();
+  }, [selectedPackageId, selectedPackageName]);
 
   useEffect(() => {
     const fetchLanguages = async () => {
       try {
-        const languagesRes = await fetch("/api/language")
+        const languagesRes = await fetch("/api/language");
         if (languagesRes.ok) {
-          const languagesData = await languagesRes.json()
+          const languagesData = await languagesRes.json();
           if (Array.isArray(languagesData)) {
-            setLanguages(languagesData)
-            setLanguageError(null)
+            setLanguages(languagesData);
+            setLanguageError(null);
           } else {
-            console.error("Languages data is not an array")
+            console.error("Languages data is not an array");
             setLanguageError(
               "Failed to load languages. Please refresh the page."
-            )
+            );
           }
         } else {
-          console.error("Failed to fetch languages:", languagesRes.statusText)
-          setLanguageError("Failed to load languages. Please try again later.")
+          console.error("Failed to fetch languages:", languagesRes.statusText);
+          setLanguageError("Failed to load languages. Please try again later.");
         }
       } catch (error) {
-        console.error("Error fetching languages:", error)
+        console.error("Error fetching languages:", error);
         setLanguageError(
           "Error loading languages. Please check your connection."
-        )
+        );
       }
-    }
-    fetchLanguages()
-  }, [])
+    };
+    fetchLanguages();
+  }, []);
 
   const onSubmit = async (data: FormValues) => {
-    let combinedDateTime = null
+    let combinedDateTime = null;
     if (data.date && data.time) {
-      const date = new Date(data.date)
-      const [hours, minutes] = data.time.split(":").map(Number)
-      date.setHours(hours, minutes, 0, 0)
-      combinedDateTime = date.toISOString()
+      const date = new Date(data.date);
+      const [hours, minutes] = data.time.split(":").map(Number);
+      date.setHours(hours, minutes, 0, 0);
+      combinedDateTime = date.toISOString();
     } else if (data.date) {
-      combinedDateTime = new Date(data.date).toISOString()
+      combinedDateTime = new Date(data.date).toISOString();
     } else {
-      combinedDateTime = new Date().toISOString()
+      combinedDateTime = new Date().toISOString();
     }
 
     const dataToSend = {
       name: data.name,
       email: data.email,
       phone_number: data.phoneNumber || null,
-      traveler_number: data.travelerNumber
-        ? parseInt(data.travelerNumber)
-        : 1,
+      traveler_number: data.travelerNumber ? parseInt(data.travelerNumber) : 1,
       time_available: data.timeAvailable || "FEW_HOURS",
       date_time: combinedDateTime,
       special_interest:
@@ -170,7 +206,7 @@ export default function ContactPage() {
       language_codes: data.languages,
       Additional_preference: data.specialInterests.join(", "),
       role: "USER",
-    }
+    };
 
     try {
       const response = await fetch("/api/form", {
@@ -179,9 +215,9 @@ export default function ContactPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(dataToSend),
-      })
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (response.ok) {
         try {
@@ -195,31 +231,32 @@ export default function ContactPage() {
               package_selection: [data.packageId],
               date_time: dataToSend.date_time,
             }),
-          })
+          });
         } catch (emailError) {
           console.error(
             "Email sending failed, but form was submitted:",
             emailError
-          )
+          );
         }
 
         toast.success("✅ Request Sent Successfully!", {
-          description: "Thank you for your submission! We will contact you soon.",
-        })
+          description:
+            "Thank you for your submission! We will contact you soon.",
+        });
 
-        reset()
+        reset();
       } else {
-        throw new Error(result.error || "Submission failed")
+        throw new Error(result.error || "Submission failed");
       }
     } catch (error) {
-      console.error("Error submitting form:", error)
+      console.error("Error submitting form:", error);
       toast.error("⚠️ Submission Failed", {
         description: `An error occurred: ${
           error instanceof Error ? error.message : "Please try again."
         }`,
-      })
+      });
     }
-  }
+  };
 
   const interests = [
     "Food",
@@ -229,13 +266,13 @@ export default function ContactPage() {
     "Markets",
     "Coffee",
     "Other",
-  ]
-  const travelerOptions = ["1", "2", "3-5", "6-10", "10+"]
+  ];
+  const travelerOptions = ["1", "2", "3-5", "6-10", "10+"];
   const timeOptions = [
     { value: "FEW_HOURS", label: "Few hours" },
     { value: "HALF_DAY", label: "Half day" },
     { value: "FULL_DAY", label: "Full day" },
-  ]
+  ];
 
   return (
     <div className="min-h-screen bg-white">
@@ -244,13 +281,21 @@ export default function ContactPage() {
       <section className="pt-20 pb-16 bg-gradient-to-br from-amber-50 to-orange-50">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-              Get In Touch
-            </h1>
+            <h2 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+              Let&apos;s talk before you pay
+            </h2>
             <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
               Ready to explore Ethiopia with a local? We&apos;d love to hear
               from you!
             </p>
+            {selectedPackageId && (
+              <div className="bg-amber-100 border border-amber-300 rounded-lg p-4 mb-6">
+                <p className="text-amber-800 font-medium">
+                  🎉 You&apos;ve selected the &quot;{selectedPackageName}&quot;
+                  package! It&apos;s been pre-filled in the form below.
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 mb-8">
@@ -277,7 +322,7 @@ export default function ContactPage() {
                 <a
                   href="tel:+251905093496"
                   className="text-amber-600 hover:text-amber-700 transition-colors font-medium">
-                  +251 905 093 496
+                  +251 9943195220
                 </a>
               </CardContent>
             </Card>
@@ -290,14 +335,19 @@ export default function ContactPage() {
                 <h3 className="font-bold text-gray-900 mb-2">Follow Us</h3>
                 <div className="flex justify-center space-x-3">
                   <a
-                    href="#"
+                    href="https://www.instagram.com/visitopia_/"
                     className="w-8 h-8 bg-amber-600 rounded-full flex items-center justify-center hover:bg-amber-700 transition-colors">
                     <Instagram className="w-4 h-4 text-white" />
                   </a>
                   <a
-                    href="#"
+                    href="https://web.facebook.com/profile.php?id=61579353634690"
                     className="w-8 h-8 bg-amber-600 rounded-full flex items-center justify-center hover:bg-amber-700 transition-colors">
                     <Facebook className="w-4 h-4 text-white" />
+                  </a>
+                  <a
+                    href="#"
+                    className="w-8 h-8 bg-amber-600 rounded-full flex items-center justify-center hover:bg-amber-700 transition-colors">
+                    <Send className="w-4 h-4 text-white"/>
                   </a>
                 </div>
               </CardContent>
@@ -482,28 +532,48 @@ export default function ContactPage() {
                     className="text-gray-700 font-semibold">
                     Package Selection *
                   </Label>
-                  <Controller
-                    name="packageId"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}>
-                        <SelectTrigger className="mt-2 border-gray-300 focus:border-amber-500 focus:ring-amber-500">
-                          <SelectValue placeholder="Select a package" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {packages.map((pkg) => (
-                            <SelectItem
-                              key={pkg.id}
-                              value={pkg.id.toString()}>
-                              {pkg.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    )}
-                  />
+                  {isLoadingPackages ? (
+                    <div className="mt-2 p-3 border border-gray-300 rounded-md bg-gray-100 animate-pulse">
+                      Loading packages...
+                    </div>
+                  ) : (
+                    <Controller
+                      name="packageId"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                            // Update the selected package name when user changes selection
+                            const selectedPkg = packages.find(
+                              (pkg) => pkg.id.toString() === value
+                            );
+                            if (selectedPkg) {
+                              setSelectedPackageName(selectedPkg.name);
+                            }
+                          }}
+                          value={field.value}>
+                          <SelectTrigger className="mt-2 border-gray-300 focus:border-amber-500 focus:ring-amber-500">
+                            <SelectValue
+                              placeholder={
+                                selectedPackageName || "Select a package"
+                              }>
+                              {selectedPackageName || "Select a package"}
+                            </SelectValue>
+                          </SelectTrigger>
+                          <SelectContent>
+                            {packages.map((pkg) => (
+                              <SelectItem
+                                key={pkg.id}
+                                value={pkg.id.toString()}>
+                                {pkg.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                  )}
                   {errors.packageId && (
                     <p className="text-red-500 text-sm mt-1">
                       {errors.packageId.message}
@@ -530,7 +600,9 @@ export default function ContactPage() {
                           <SelectTrigger className="mt-2 border-gray-300 focus:border-amber-500 focus:ring-amber-500">
                             <SelectValue placeholder="Select preferred languages">
                               {field.value.length > 0
-                                ? languages.find((l) => l.code === field.value[0])?.name || ""
+                                ? languages.find(
+                                    (l) => l.code === field.value[0]
+                                  )?.name || ""
                                 : "Select languages"}
                             </SelectValue>
                           </SelectTrigger>
@@ -572,7 +644,7 @@ export default function ContactPage() {
                                       field.value.filter(
                                         (value) => value !== interest
                                       )
-                                    )
+                                    );
                               }}
                               className="border-gray-300 data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600"
                             />
@@ -622,5 +694,5 @@ export default function ContactPage() {
 
       <Footer />
     </div>
-  )
+  );
 }

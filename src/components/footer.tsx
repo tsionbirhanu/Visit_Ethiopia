@@ -1,6 +1,6 @@
 "use client"
 
-import { Facebook, Instagram, Twitter } from "lucide-react"
+import { Facebook, Instagram, Send } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -69,7 +69,7 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Follow Us</h3>
             <div className="flex space-x-4 mb-4">
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/visitopia_/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-amber-100 hover:text-orange-400 hover:scale-110 transition-all duration-200"
@@ -78,7 +78,7 @@ export default function Footer() {
                 <Instagram size={20} />
               </a>
               <a
-                href="https://facebook.com"
+                href="https://web.facebook.com/profile.php?id=61579353634690"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-amber-100 hover:text-orange-400 hover:scale-110 transition-all duration-200"
@@ -87,13 +87,13 @@ export default function Footer() {
                 <Facebook size={20} />
               </a>
               <a
-                href="https://twitter.com"
+                href="https://t.me/visitopia"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-amber-100 hover:text-orange-400 hover:scale-110 transition-all duration-200"
                 aria-label="Twitter"
               >
-                <Twitter size={20} />
+                <Send size={20} />
               </a>
             </div>
             <p className="text-amber-100 text-sm italic">

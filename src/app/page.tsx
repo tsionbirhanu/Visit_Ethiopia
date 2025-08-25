@@ -1,15 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Clock, Users, MapPin } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Clock, Users, MapPin, Check, Star } from "lucide-react";
 import { useState, useEffect } from "react";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-
 
 interface Package {
   id: number;
@@ -21,22 +20,20 @@ interface Package {
   };
 }
 const heroImages = [
-  "/images/Lalibela4.jpg",
-  "/images/hamer.png",
-  "/images/addis.png",
+  "/images/tour.jpg",
+  "/images/happy-day-ethiopian-tours.jpg",
+  "/images/harar_ethiopia_photography_tours.png",
+  "/images/IMG_2974.png",
+  "/images/Tour-Company-In-Ethiopia-Tour-and-Travel-in-Ethiopiaf.jpg",
   "/images/tmket.jpg",
-  "/images/tana.jpg",
-  "/images/dallol.jpg",
 ];
 
 export default function HomePage() {
-  const [currentTagline, setCurrentTagline] = useState(0);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [packages, setPackages] = useState<Package[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-
 
   const taglines = [
     "12 Hours. One Adventure. Let's Go.",
@@ -52,7 +49,49 @@ export default function HomePage() {
           throw new Error("Failed to fetch packages");
         }
         const data = await response.json();
-        setPackages(data);
+        
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const processedData = data.map((pkg: any) => {
+          let inclusions: string[] = [];
+          
+          if (Array.isArray(pkg.inclusions)) {
+            inclusions = pkg.inclusions;
+          } else if (typeof pkg.inclusions === 'string') {
+            try {
+              const cleanedString = pkg.inclusions
+                .replace(/\n/g, '')
+                .replace(/,\s*\]/g, ']')
+                .replace(/,\s*$/g, '');
+              
+              const parsed = JSON.parse(cleanedString);
+              if (Array.isArray(parsed)) {
+                inclusions = parsed;
+              }
+            } catch (e) {
+              console.warn(`Failed to parse inclusions for package ${pkg.id}:`, e);
+              inclusions = [pkg.inclusions];
+            }
+          }
+          
+          let priceData = pkg.Price;
+          if (typeof pkg.Price === 'string') {
+            priceData = { Regular: pkg.Price };
+          }
+          
+          return {
+            ...pkg,
+            inclusions,
+            Price: priceData
+          };
+        });
+        
+        const freeTrialIndex = processedData.findIndex(pkg => pkg.name === "Try For Free");
+        if (freeTrialIndex !== -1) {
+          const freeTrialPackage = processedData.splice(freeTrialIndex, 1)[0];
+          processedData.push(freeTrialPackage);
+        }
+        
+        setPackages(processedData);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "Failed to fetch packages"
@@ -65,13 +104,6 @@ export default function HomePage() {
     fetchPackages();
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTagline((prev) => (prev + 1) % taglines.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [taglines.length]);
-
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -80,18 +112,35 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    const imageInterval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % heroImages.length);
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % heroImages.length);
     }, 5000);
 
     return () => {
-      clearInterval(imageInterval);
+      clearInterval(interval);
     };
   }, []);
+
+  const handleCircleSelect = (index: number) => {
+    setCurrentIndex(index);
+  };
 
   const howItWorksAnimation = useScrollAnimation();
   const benefitsAnimation = useScrollAnimation();
   const packagesAnimation = useScrollAnimation();
+
+  const handlePackageSelect = (packageId: number) => {
+    localStorage.setItem('selectedPackage', packageId.toString());
+    router.push("/contact");
+  };
+
+  const getActiveCircleIndex = () => {
+    return currentIndex % 3;
+  };
+
+  const getCurrentTagline = () => {
+    return taglines[currentIndex % 3];
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -103,7 +152,7 @@ export default function HomePage() {
             <div
               key={src}
               className={`absolute inset-0 transition-opacity duration-1000 ${
-                currentImageIndex === index ? "opacity-100" : "opacity-0"
+                currentIndex === index ? "opacity-100" : "opacity-0"
               }`}>
               <Image
                 src={src || "/placeholder.svg"}
@@ -125,7 +174,7 @@ export default function HomePage() {
             Don&apos;t Just Sit There.
           </h1>
           <p className="text-2xl text-white/90 mb-8 max-w-lg transition-opacity duration-500 font-light">
-            {taglines[currentTagline]}
+            {getCurrentTagline()}
           </p>
           <Button
             onClick={() => scrollToSection("packages")}
@@ -134,10 +183,19 @@ export default function HomePage() {
           </Button>
         </div>
 
-        <div className="absolute bottom-8 left-6 md:left-12 flex space-x-3">
-          <button className="w-3 h-3 bg-white rounded-full"></button>
-          <button className="w-3 h-3 bg-white/50 rounded-full"></button>
-          <button className="w-3 h-3 bg-white/50 rounded-full"></button>
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3">
+          {[0, 1, 2].map((index) => (
+            <button
+              key={index}
+              onClick={() => handleCircleSelect(index + (Math.floor(currentIndex / 3) * 3))}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                getActiveCircleIndex() === index 
+                  ? "bg-white scale-110" 
+                  : "bg-white/50 hover:bg-white/70"
+              }`}
+              aria-label={`View slide ${index + 1}`}
+            />
+          ))}
         </div>
       </section>
 
@@ -177,11 +235,10 @@ export default function HomePage() {
                     </span>
                   </div>
                   <h3 className="text-2xl font-semibold text-gray-900 mb-4">
-                    Tell us how much time you have
+                    Tell Us Your Timeframe
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Share your schedule and we&apos;ll plan the perfect
-                    experience
+                    Whether you have a few hours or a full day, we shape the experience to fit your schedule.
                   </p>
                 </div>
               </div>
@@ -199,10 +256,10 @@ export default function HomePage() {
                     </span>
                   </div>
                   <h3 className="text-2xl font-semibold text-gray-900 mb-4">
-                    We match you with a local guide
+                     Match With a Local Guide
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Get paired with someone who fits your interests perfectly.
+                    We connect you with someone who knows how to turn your time into unforgettable stories.
                   </p>
                 </div>
               </div>
@@ -220,11 +277,10 @@ export default function HomePage() {
                     </span>
                   </div>
                   <h3 className="text-2xl font-semibold text-gray-900 mb-4">
-                    Explore together and create memories
+                     Go Live the Experience
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Enjoy stories, culture and moments you&apos;ll remember
-                    forever
+                     From traditional coffee ceremonies to spontaneous street explorations, your guide handles the plan, you live it.
                   </p>
                 </div>
               </div>
@@ -385,134 +441,142 @@ export default function HomePage() {
             ? "opacity-100 translate-y-0"
             : "opacity-0 translate-y-8"
         }`}>
-        <div className="max-w-6xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               Our Packages
             </h2>
-            <p className="text-gray-600 text-lg">
-              Choose your perfect experience
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              Choose your perfect Ethiopian adventure with our carefully crafted experiences
             </p>
           </div>
 
           {loading && (
             <div className="text-center py-12">
-              <p>Loading packages...</p>
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600"></div>
+              <p className="mt-4 text-gray-600">Loading packages...</p>
             </div>
           )}
 
           {error && (
-            <div className="text-center py-12 text-red-500">
-              <p>{error}</p>
+            <div className="text-center py-12">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
+                <p className="text-red-600 font-medium">Error loading packages</p>
+                <p className="text-red-500 text-sm mt-2">{error}</p>
+              </div>
             </div>
           )}
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
             {packages.map((pkg, index) => {
               const priceKeys = Object.keys(pkg.Price).filter(
                 (key) => key !== "Regular"
               );
               const isPopular = index === 1;
+              const isFreeTrial = pkg.name === "Try For Free";
 
               return (
-                <div
+                <Card 
                   key={pkg.id}
-                  className={`bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-8 relative flex flex-col ${
+                  className={`relative overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-300 h-full flex flex-col ${
                     isPopular
-                      ? "bg-gradient-to-br from-amber-600 to-amber-800 transform scale-105"
-                      : ""
-                  }`}>
+                      ? "bg-gradient-to-b from-amber-600 to-amber-700 transform md:scale-105"
+                      : isFreeTrial
+                      ? "bg-gradient-to-b from-blue-100 to-blue-200 border-2 border-blue-300"
+                      : "bg-white border border-gray-200"
+                  }`}
+                >
                   {isPopular && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <span className="bg-orange-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                    <div className="absolute top-4 right-4 z-10">
+                      <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center">
+                        <Star className="w-3 h-3 mr-1 fill-current" />
                         Most Popular
-                      </span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {isFreeTrial && (
+                    <div className="absolute top-4 right-4 z-10">
+                      <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                        Try Free
+                      </div>
                     </div>
                   )}
 
-                  <div className="flex-1 flex flex-col">
-                    <div className="text-center">
-                      <h3
-                        className={`text-lg font-bold mb-2 tracking-wide ${
-                          isPopular ? "text-white" : "text-gray-900"
-                        }`}>
-                        {pkg.name}
-                      </h3>
+                  <CardHeader className={`pb-4 ${isPopular ? 'pt-8' : 'pt-6'} ${isFreeTrial ? 'bg-blue-50' : ''}`}>
+                    <CardTitle className={`text-xl font-bold text-center ${isPopular ? 'text-white' : isFreeTrial ? 'text-blue-900' : 'text-gray-900'}`}>
+                      {pkg.name}
+                    </CardTitle>
+                  </CardHeader>
 
-                      <div className="mb-6 space-y-2">
-                        <div>
-                          <span
-                            className={`text-4xl font-extrabold ${
-                              isPopular ? "text-white" : "text-amber-800"
-                            }`}>
-                            {pkg.Price.Regular}
-                          </span>
-                          <p
-                            className={`text-sm ${
-                              isPopular ? "text-amber-100" : "text-gray-500"
-                            }`}>
-                            Basic package
-                          </p>
+                  <CardContent className="flex-1 pb-6">
+                    <div className="text-center mb-6">
+                      <div className={`text-4xl font-bold mb-1 ${isPopular ? 'text-white' : isFreeTrial ? 'text-blue-800' : 'text-amber-800'}`}>
+                        {pkg.Price.Regular}
+                      </div>
+                      {isFreeTrial && (
+                        <div className="text-blue-600 text-sm font-medium">
+                          No credit card required
                         </div>
+                      )}
+                    </div>
 
+                    {priceKeys.length > 0 && (
+                      <div className="mb-6 space-y-3">
                         {priceKeys.map((key) => (
                           <div
                             key={key}
-                            className={`mt-3 p-3 rounded-lg ${
-                              isPopular ? "bg-white/10" : "bg-amber-50"
-                            }`}>
-                            <span
-                              className={`text-2xl font-bold ${
-                                isPopular ? "text-white" : "text-amber-800"
-                              }`}>
+                            className={`p-3 rounded-lg text-center ${
+                              isPopular 
+                                ? "bg-white/10" 
+                                : isFreeTrial
+                                ? "bg-blue-100/50 border border-blue-200"
+                                : "bg-amber-50 border border-amber-100"
+                            }`}
+                          >
+                            <div className={`text-xl font-bold ${isPopular ? 'text-white' : isFreeTrial ? 'text-blue-800' : 'text-amber-800'}`}>
                               {pkg.Price[key]}
-                            </span>
-                            <p
-                              className={`text-xs ${
-                                isPopular ? "text-amber-100" : "text-amber-600"
-                              }`}>
+                            </div>
+                            <div className={`text-xs font-medium ${isPopular ? 'text-amber-100' : isFreeTrial ? 'text-blue-700' : 'text-amber-600'}`}>
                               {key}
-                            </p>
+                            </div>
                           </div>
                         ))}
                       </div>
+                    )}
 
-                      <ul className="space-y-4 mb-8 text-left">
+                    <div className="space-y-3">
+                      <h4 className={`font-semibold text-sm ${isPopular ? 'text-amber-100' : isFreeTrial ? 'text-blue-800' : 'text-gray-900'} mb-2`}>
+                        What&apos;s included:
+                      </h4>
+                      <ul className="space-y-2">
                         {pkg.inclusions.map((item, i) => (
                           <li key={i} className="flex items-start">
-                            <div
-                              className={`w-5 h-5 rounded-full flex items-center justify-center mt-0.5 mr-3 flex-shrink-0 ${
-                                isPopular ? "bg-white/20" : "bg-amber-100"
-                              }`}>
-                              <div
-                                className={`w-2 h-2 rounded-full ${
-                                  isPopular ? "bg-white" : "bg-amber-600"
-                                }`}></div>
-                            </div>
-                            <span
-                              className={
-                                isPopular ? "text-white" : "text-gray-700"
-                              }>
+                            <Check className={`w-4 h-4 mt-0.5 mr-2 flex-shrink-0 ${isPopular ? 'text-amber-200' : isFreeTrial ? 'text-blue-600' : 'text-amber-600'}`} />
+                            <span className={`text-sm ${isPopular ? 'text-white' : isFreeTrial ? 'text-blue-900' : 'text-gray-700'}`}>
                               {item}
                             </span>
                           </li>
                         ))}
                       </ul>
                     </div>
+                  </CardContent>
 
-                    <div className="mt-auto">
-                      <Button
-                        onClick={() => router.push("/contact")}
-                        className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 ${
-                          isPopular
-                            ? "bg-white text-amber-800 hover:bg-amber-50"
-                            : "bg-amber-800 hover:bg-amber-900 text-white"
-                        }`}>
-                        Book Now
-                      </Button>
-                    </div>
-                  </div>
-                </div>
+                  <CardFooter className="pt-4">
+                    <Button
+                      onClick={() => handlePackageSelect(pkg.id)}
+                      className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 ${
+                        isPopular
+                          ? "bg-white text-amber-800 hover:bg-amber-50 hover:scale-105"
+                          : isFreeTrial
+                          ? "bg-blue-600 hover:bg-blue-700 text-white hover:scale-105"
+                          : "bg-amber-800 hover:bg-amber-900 text-white hover:scale-105"
+                      }`}
+                    >
+                      {isFreeTrial ? "Try It Now" : "Book This Package"}
+                    </Button>
+                  </CardFooter>
+                </Card>
               );
             })}
           </div>

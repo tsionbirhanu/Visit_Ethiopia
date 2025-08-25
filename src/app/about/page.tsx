@@ -10,12 +10,12 @@ export default function AboutPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
   const heroImages = [
-    "/images/Lalibela4.jpg",
-    "/images/hamer.png",
-    "/images/addis.png",
-    "/images/tmket.jpg",
-    "/images/tana.jpg",
-    "/images/dallol.jpg",
+    "/images/tour.jpg",
+  "/images/happy-day-ethiopian-tours.jpg",
+  "/images/harar_ethiopia_photography_tours.png",
+  "/images/IMG_2974.png",
+  "/images/Tour-Company-In-Ethiopia-Tour-and-Travel-in-Ethiopiaf.jpg",
+  "/images/tmket.jpg",
   ]
 
   useEffect(() => {
@@ -28,18 +28,18 @@ export default function AboutPage() {
   const workSteps = [
     {
       icon: <Clock className="w-8 h-8" />,
-      title: "Tell us how much time you have",
-      description: "Share your schedule and we'll plan the perfect experience",
+      title: "Tell Us Your Timeframe",
+      description: "Whether you have a few hours or a full day, you let us know how much time you want to spend exploring. We design experiences that fit your schedule, so nothing feels rushed and nothing is wasted.",
     },
     {
       icon: <Users className="w-8 h-8" />,
-      title: "We match you with a local guide",
-      description: "Get paired with someone who fits your interests perfectly",
+      title: "Match With a Local Guide",
+      description: "We pair you with a local who knows the city and enjoys sharing their culture. Every guide has their own focus: some on food, some on music, others on history, so you get a match that feels natural.",
     },
     {
       icon: <MapPin className="w-8 h-8" />,
-      title: "Explore together and create memories",
-      description: "Enjoy stories, culture and moments you'll remember forever",
+      title: "Go Live the Experience",
+      description: "From a traditional coffee ceremony to a street market walk, from hidden jazz bars to quiet neighborhoods, your guide takes care of the details. You just show up, explore and enjoy a real slice of Ethiopian life.",
     },
   ]
 
@@ -125,13 +125,6 @@ export default function AboutPage() {
                 <p className="text-lg text-gray-700 leading-relaxed">
                   And because every traveler deserves a real connection, not just a checklist.
                 </p>
-                {/* <div className="bg-gradient-to-r from-amber-100 to-orange-100 p-6 rounded-xl border-l-4 border-amber-500">
-                  <p className="text-amber-800 italic font-medium">
-                    &quot;Every cup of coffee tells a story, every smile builds a bridge, every shared moment creates a
-                    memory that lasts forever.&quot;
-                  </p>
-                  <p className="text-amber-700 text-sm mt-2">— Visitopia Founder</p>
-                </div> */}
               </div>
             </div>
           </div>
