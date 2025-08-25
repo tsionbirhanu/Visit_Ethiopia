@@ -19,6 +19,7 @@ interface Package {
     [key: string]: string;
   };
 }
+
 const heroImages = [
   "/images/tour.jpg",
   "/images/happy-day-ethiopian-tours.jpg",
@@ -85,7 +86,7 @@ export default function HomePage() {
           };
         });
         
-        const freeTrialIndex = processedData.findIndex(pkg => pkg.name === "Try For Free");
+        const freeTrialIndex = processedData.findIndex(pkg => pkg.name === "Try Us For Free");
         if (freeTrialIndex !== -1) {
           const freeTrialPackage = processedData.splice(freeTrialIndex, 1)[0];
           processedData.push(freeTrialPackage);
@@ -468,54 +469,42 @@ export default function HomePage() {
           )}
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
-            {packages.map((pkg, index) => {
+            {packages.map((pkg) => {
               const priceKeys = Object.keys(pkg.Price).filter(
                 (key) => key !== "Regular"
               );
-              const isPopular = index === 1;
-              const isFreeTrial = pkg.name === "Try For Free";
+              const isFreeTrial = pkg.name === "Try Us For Free";
 
               return (
                 <Card 
                   key={pkg.id}
                   className={`relative overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-300 h-full flex flex-col ${
-                    isPopular
+                    isFreeTrial
                       ? "bg-gradient-to-b from-amber-600 to-amber-700 transform md:scale-105"
-                      : isFreeTrial
-                      ? "bg-gradient-to-b from-blue-100 to-blue-200 border-2 border-blue-300"
                       : "bg-white border border-gray-200"
                   }`}
                 >
-                  {isPopular && (
-                    <div className="absolute top-4 right-4 z-10">
+                  {isFreeTrial && (
+                    <div className="absolute top-3 right-4 z-10">
                       <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center">
                         <Star className="w-3 h-3 mr-1 fill-current" />
-                        Most Popular
+                        Try Us For Free
                       </div>
                     </div>
                   )}
-                  
-                  {isFreeTrial && (
-                    <div className="absolute top-4 right-4 z-10">
-                      <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
-                        Try Free
-                      </div>
-                    </div>
-                  )}
-
-                  <CardHeader className={`pb-4 ${isPopular ? 'pt-8' : 'pt-6'} ${isFreeTrial ? 'bg-blue-50' : ''}`}>
-                    <CardTitle className={`text-xl font-bold text-center ${isPopular ? 'text-white' : isFreeTrial ? 'text-blue-900' : 'text-gray-900'}`}>
+                  <CardHeader className={`pb-4 ${isFreeTrial ? 'pt-8' : 'pt-6'}`}>
+                    <CardTitle className={`text-xl font-bold text-center ${isFreeTrial ? 'text-white' : 'text-gray-900'}`}>
                       {pkg.name}
                     </CardTitle>
                   </CardHeader>
 
                   <CardContent className="flex-1 pb-6">
                     <div className="text-center mb-6">
-                      <div className={`text-4xl font-bold mb-1 ${isPopular ? 'text-white' : isFreeTrial ? 'text-blue-800' : 'text-amber-800'}`}>
+                      <div className={`text-4xl font-bold mb-1 ${isFreeTrial ? 'text-white' : 'text-amber-800'}`}>
                         {pkg.Price.Regular}
                       </div>
                       {isFreeTrial && (
-                        <div className="text-blue-600 text-sm font-medium">
+                        <div className="text-amber-200 text-sm font-medium">
                           No credit card required
                         </div>
                       )}
@@ -527,17 +516,15 @@ export default function HomePage() {
                           <div
                             key={key}
                             className={`p-3 rounded-lg text-center ${
-                              isPopular 
+                              isFreeTrial 
                                 ? "bg-white/10" 
-                                : isFreeTrial
-                                ? "bg-blue-100/50 border border-blue-200"
                                 : "bg-amber-50 border border-amber-100"
                             }`}
                           >
-                            <div className={`text-xl font-bold ${isPopular ? 'text-white' : isFreeTrial ? 'text-blue-800' : 'text-amber-800'}`}>
+                            <div className={`text-xl font-bold ${isFreeTrial ? 'text-white' : 'text-amber-800'}`}>
                               {pkg.Price[key]}
                             </div>
-                            <div className={`text-xs font-medium ${isPopular ? 'text-amber-100' : isFreeTrial ? 'text-blue-700' : 'text-amber-600'}`}>
+                            <div className={`text-xs font-medium ${isFreeTrial ? 'text-amber-100' : 'text-amber-600'}`}>
                               {key}
                             </div>
                           </div>
@@ -546,14 +533,14 @@ export default function HomePage() {
                     )}
 
                     <div className="space-y-3">
-                      <h4 className={`font-semibold text-sm ${isPopular ? 'text-amber-100' : isFreeTrial ? 'text-blue-800' : 'text-gray-900'} mb-2`}>
+                      <h4 className={`font-semibold text-sm ${isFreeTrial ? 'text-amber-100' : 'text-gray-900'} mb-2`}>
                         What&apos;s included:
                       </h4>
                       <ul className="space-y-2">
                         {pkg.inclusions.map((item, i) => (
                           <li key={i} className="flex items-start">
-                            <Check className={`w-4 h-4 mt-0.5 mr-2 flex-shrink-0 ${isPopular ? 'text-amber-200' : isFreeTrial ? 'text-blue-600' : 'text-amber-600'}`} />
-                            <span className={`text-sm ${isPopular ? 'text-white' : isFreeTrial ? 'text-blue-900' : 'text-gray-700'}`}>
+                            <Check className={`w-4 h-4 mt-0.5 mr-2 flex-shrink-0 ${isFreeTrial ? 'text-amber-200' : 'text-amber-600'}`} />
+                            <span className={`text-sm ${isFreeTrial ? 'text-white' : 'text-gray-700'}`}>
                               {item}
                             </span>
                           </li>
@@ -566,14 +553,12 @@ export default function HomePage() {
                     <Button
                       onClick={() => handlePackageSelect(pkg.id)}
                       className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 ${
-                        isPopular
+                        isFreeTrial
                           ? "bg-white text-amber-800 hover:bg-amber-50 hover:scale-105"
-                          : isFreeTrial
-                          ? "bg-blue-600 hover:bg-blue-700 text-white hover:scale-105"
                           : "bg-amber-800 hover:bg-amber-900 text-white hover:scale-105"
                       }`}
                     >
-                      {isFreeTrial ? "Try It Now" : "Book This Package"}
+                      {isFreeTrial ? "Try It Now" : "Book Now"}
                     </Button>
                   </CardFooter>
                 </Card>

@@ -281,12 +281,11 @@ export default function ContactPage() {
       <section className="pt-20 pb-16 bg-gradient-to-br from-amber-50 to-orange-50">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-              Let&apos;s talk before you pay
-            </h2>
+            <h3 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 mt-4">
+               Get In Touch With Visitopia
+            </h3>
             <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
-              Ready to explore Ethiopia with a local? We&apos;d love to hear
-              from you!
+              Let&apos;s talk before you pay
             </p>
             {selectedPackageId && (
               <div className="bg-amber-100 border border-amber-300 rounded-lg p-4 mb-6">
@@ -345,7 +344,7 @@ export default function ContactPage() {
                     <Facebook className="w-4 h-4 text-white" />
                   </a>
                   <a
-                    href="#"
+                    href="https://t.me/visitopia"
                     className="w-8 h-8 bg-amber-600 rounded-full flex items-center justify-center hover:bg-amber-700 transition-colors">
                     <Send className="w-4 h-4 text-white"/>
                   </a>
