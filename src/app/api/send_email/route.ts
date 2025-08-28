@@ -1,11 +1,23 @@
+// app/api/tourist-request/route.ts
+import { google } from "googleapis";
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const SHEET_ID = process.env.SHEET_ID!;
+const CREDENTIALS = JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON!);
 
-export async function POST(request: Request) {
+async function getSheetsClient() {
+  const auth = new google.auth.GoogleAuth({
+    credentials: CREDENTIALS,
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+  });
+
+  const sheets = google.sheets({ version: "v4", auth });
+  return sheets;
+}
+
+export async function POST(req: Request) {
   try {
-    const body = await request.json();
+    const body = await req.json();
 
     const {
       name,
@@ -21,30 +33,39 @@ export async function POST(request: Request) {
       Additional_preference,
     } = body;
 
-    // Send email
-    const data = await resend.emails.send({
-      from: "onboarding@resend.dev", // verified domain or default
-      to: "visitopiacontact@gmail.com", // where you want to receive the form data
-      subject: "New Tourist Request",
-      html: `
-        <h2>New Submission</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Phone:</strong> ${phone_number}</p>
-        <p><strong>Travelers:</strong> ${traveler_number}</p>
-        <p><strong>Time Available:</strong> ${time_available}</p>
-        <p><string>Date and Time:</strong> ${new Date(date_time).toLocaleString()}</p>
-        <p><strong>Additional Preference:</strong> ${Additional_preference}</p>
-        <p><strong>Special Interest:</strong> ${special_interest}</p>
-        <p><strong>Additional Note:</strong> ${Additional_note}</p>
-        <p><strong>Package IDs:</strong> ${package_selection?.join(", ")}</p>
-        <p><strong>Languages:</strong> ${language_codes?.join(", ")}</p>
-      `,
+    // Basic validation
+    if (!name || !email || !traveler_number) {
+      return NextResponse.json({ error: "Name, email, and traveler number are required" }, { status: 400 });
+    }
+
+    const sheets = await getSheetsClient();
+
+    // Append new row to Google Sheet
+    await sheets.spreadsheets.values.append({
+      spreadsheetId: SHEET_ID,
+      range: "Sheet1!A:L", // Adjust columns to match your headers
+      valueInputOption: "RAW",
+      requestBody: {
+        values: [[
+          new Date().toISOString(),
+          name,
+          email,
+          phone_number ?? "",
+          traveler_number,
+          time_available ?? "",
+          special_interest ?? "",
+          Additional_note ?? "",
+          package_selection?.join(", ") ?? "",
+          language_codes?.join(", ") ?? "",
+          date_time ? new Date(date_time).toLocaleString() : "",
+          Additional_preference ?? ""
+        ]],
+      },
     });
 
-    return NextResponse.json({ success: true, data });
+    return NextResponse.json({ success: true, message: "Request stored successfully" });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
+    console.error("Error storing request in Google Sheet:", error);
+    return NextResponse.json({ error: "Failed to store request" }, { status: 500 });
   }
 }
