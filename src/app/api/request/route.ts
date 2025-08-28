@@ -31,8 +31,7 @@ export async function POST(req: Request) {
       Additional_note,
       Additional_preference,
     } = body;
-
-    // Basic validation
+    
     if (!name || !email || !traveler_number) {
       return NextResponse.json({ error: "Name, email, and traveler number are required" }, { status: 400 });
     }
@@ -42,7 +41,7 @@ export async function POST(req: Request) {
     // Append new row to Google Sheet
     await sheets.spreadsheets.values.append({
       spreadsheetId: SHEET_ID,
-      range: "Sheet1!A:L", // Adjust columns to match your headers
+      range: "Sheet1!A:L",
       valueInputOption: "RAW",
       requestBody: {
         values: [[

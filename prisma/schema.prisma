@@ -9,7 +9,7 @@ datasource db {
 
 model Package {
   id         Int    @id @default(autoincrement())
-  name       String
+  name       String @unique
   inclusions Json
   Price      Json
   users      Data[]
@@ -35,7 +35,7 @@ model Data {
 model Language {
   id    Int    @id @default(autoincrement())
   code  String @unique
-  name  String
+  name  String @unique
   users Data[] @relation("UserLanguages")
 }
 
