@@ -25,13 +25,14 @@ export default function Navbar() {
 
   const navLinks = [
     { name: "Home", id: "hero", type: "scroll" },
-    { name: "Packages", id: "packages", type: "scroll" },
+    // { name: "Packages", id: "packages", type: "scroll" },
+    { name: "Packages", href: "/packages", type: "route" },
     { name: "About Us", href: "/about", type: "route" },
     { name: "Contact", href: "/contact", type: "route" },
   ]
 
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-amber-200 z-50 shadow-sm">
+    <nav className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0 ml-4">

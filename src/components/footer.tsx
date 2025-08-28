@@ -5,12 +5,6 @@ import Image from "next/image"
 import Link from "next/link"
 
 export default function Footer() {
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" })
-    }
-  }
 
   return (
     <footer id="contact" className="bg-gradient-to-br from-amber-900 to-amber-950 text-white">
@@ -24,7 +18,7 @@ export default function Footer() {
               height={32}
               className="h-8 w-auto mb-4 brightness-0 invert"
             />
-            <p className="text-amber-100 text-sm leading-relaxed max-w-md">
+            <p className="text-white text-sm leading-relaxed max-w-md">
               Connecting travelers with local guides for authentic Ethiopian experiences. Real people, real places, real
               experiences.
             </p>
@@ -34,22 +28,22 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/" className="text-amber-100 hover:text-orange-400 text-sm transition-colors duration-200">
+                <Link href="/" className="text-white hover:text-orange-400 text-sm transition-colors duration-200">
                   Home
                 </Link>
               </li>
               <li>
-                <button
-                  onClick={() => scrollToSection("packages")}
-                  className="text-amber-100 hover:text-orange-400 text-sm transition-colors duration-200"
+                <Link
+                  href="/packages"
+                  className="text-white hover:text-orange-400 text-sm transition-colors duration-200"
                 >
                   Packages
-                </button>
+                </Link>
               </li>
               <li>
                 <Link
                   href="/about"
-                  className="text-amber-100 hover:text-orange-400 text-sm transition-colors duration-200"
+                  className="text-white hover:text-orange-400 text-sm transition-colors duration-200"
                 >
                   About Us
                 </Link>
@@ -57,7 +51,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/contact"
-                  className="text-amber-100 hover:text-orange-400 text-sm transition-colors duration-200"
+                  className="text-white hover:text-orange-400 text-sm transition-colors duration-200"
                 >
                   Contact
                 </Link>
@@ -72,7 +66,7 @@ export default function Footer() {
                 href="https://www.instagram.com/visitopia_/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-amber-100 hover:text-orange-400 hover:scale-110 transition-all duration-200"
+                className="text-white hover:text-orange-400 hover:scale-110 transition-all duration-200"
                 aria-label="Instagram"
               >
                 <Instagram size={20} />
@@ -81,7 +75,7 @@ export default function Footer() {
                 href="https://web.facebook.com/profile.php?id=61579353634690"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-amber-100 hover:text-orange-400 hover:scale-110 transition-all duration-200"
+                className="text-white hover:text-orange-400 hover:scale-110 transition-all duration-200"
                 aria-label="Facebook"
               >
                 <Facebook size={20} />
@@ -90,23 +84,23 @@ export default function Footer() {
                 href="https://t.me/visitopia"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-amber-100 hover:text-orange-400 hover:scale-110 transition-all duration-200"
+                className="text-white hover:text-orange-400 hover:scale-110 transition-all duration-200"
                 aria-label="Twitter"
               >
                 <Send size={20} />
               </a>
             </div>
-            <p className="text-amber-100 text-sm italic">
+            <p className="text-white text-sm italic">
               &quot;Find us where the coffee is rich and the stories are even richer.&quot;
             </p>
           </div>
         </div>
 
         <div className="border-t border-amber-800 mt-8 pt-8 text-center">
-          <p className="text-amber-200 text-sm font-medium mb-2">
+          <p className="text-white text-sm font-medium mb-2">
             Visitopia — Real People, Real Places, Real Experiences
           </p>
-          <p className="text-amber-300 text-xs">© 2025 Visitopia. All rights reserved.</p>
+          <p className="text-white text-xs">© 2025 Visitopia. All rights reserved.</p>
         </div>
       </div>
     </footer>
