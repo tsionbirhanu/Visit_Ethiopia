@@ -12,6 +12,7 @@ export async function GET() {
         inclusions: true,
         Price: true,
       },
+      orderBy: { id: "asc" },
     });
     return NextResponse.json(packages);
   } catch (error) {
