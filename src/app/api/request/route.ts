@@ -25,14 +25,13 @@ export async function POST(req: Request) {
       traveler_number,
       time_available,
       special_interest,
-      Additional_note,
       package_selection,
       language_codes,
       date_time,
+      Additional_note,
       Additional_preference,
     } = body;
-
-    // Basic validation
+    
     if (!name || !email || !traveler_number) {
       return NextResponse.json({ error: "Name, email, and traveler number are required" }, { status: 400 });
     }
@@ -42,7 +41,7 @@ export async function POST(req: Request) {
     // Append new row to Google Sheet
     await sheets.spreadsheets.values.append({
       spreadsheetId: SHEET_ID,
-      range: "Sheet1!A:L", // Adjust columns to match your headers
+      range: "Sheet1!A:L",
       valueInputOption: "RAW",
       requestBody: {
         values: [[
@@ -52,12 +51,12 @@ export async function POST(req: Request) {
           phone_number ?? "",
           traveler_number,
           time_available ?? "",
-          special_interest ?? "",
-          Additional_note ?? "",
+          Additional_preference ?? "",
           package_selection?.join(", ") ?? "",
           language_codes?.join(", ") ?? "",
           date_time ? new Date(date_time).toLocaleString() : "",
-          Additional_preference ?? ""
+          Additional_note ?? ""
+
         ]],
       },
     });

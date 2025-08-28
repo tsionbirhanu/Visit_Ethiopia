@@ -15,11 +15,12 @@ export async function POST(request: Request) {
       date_time,
       special_interest,
       Additional_note,
-      packageId, 
-      Additional_preference,     // single package selected by user
-      language_codes,  // array of language codes like ["en", "am"]
+      packageId,       // <-- frontend sends package id
+      Additional_preference,
+      language_codes,  // <-- frontend sends array of language codes like ["en", "am"]
     } = body;
 
+    // Basic validation
     if (!name || !email || !packageId) {
       return NextResponse.json(
         { error: "Name, email, and packageId are required" },
@@ -27,7 +28,23 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create user form
+    // Check if package exists by ID
+    const existingPackage = await prisma.package.findUnique({
+      where: { id: packageId },
+    });
+    if (!existingPackage) {
+      return NextResponse.json({ error: "Package not found" }, { status: 404 });
+    }
+
+    // Fetch existing languages by code
+    const existingLanguages = await prisma.language.findMany({
+      where: { code: { in: language_codes || [] } },
+    });
+    if (language_codes?.length && existingLanguages.length !== language_codes.length) {
+      return NextResponse.json({ error: "Some language codes not found" }, { status: 404 });
+    }
+
+    // Create new Data row
     const newData = await prisma.data.create({
       data: {
         name,
@@ -39,12 +56,12 @@ export async function POST(request: Request) {
         special_interest,
         Additional_note,
         Additional_preference,
-        date_time:new Date(date_time),
+        date_time: new Date(date_time),
         package: {
-          connect: { id: packageId }, 
+          connect: { id: packageId }, // connect by ID
         },
         language: {
-          connect: language_codes?.map((code: string) => ({ code })),
+          connect: language_codes?.map((code: string) => ({ code })), // connect by code
         },
       },
       include: {
@@ -60,13 +77,13 @@ export async function POST(request: Request) {
   }
 }
 
-// GET: Fetch all user forms 
+// GET: Fetch all user forms
 export async function GET() {
   try {
     const allData = await prisma.data.findMany({
       include: {
-        package: true,   
-        language: true, 
+        package: true,
+        language: true,
       },
       orderBy: { id: "desc" },
     });
