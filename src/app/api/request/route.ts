@@ -1,5 +1,6 @@
 import { google } from "googleapis";
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 const SHEET_ID = process.env.SHEET_ID!;
 const CREDENTIALS = JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON!);
@@ -25,38 +26,62 @@ export async function POST(req: Request) {
       traveler_number,
       time_available,
       special_interest,
-      package_selection,
-      language_codes,
+      package_selection, // array of package IDs as strings
+      language_codes,    // array of language codes
       date_time,
       Additional_note,
       Additional_preference,
     } = body;
-    
-    if (!name || !email || !traveler_number) {
-      return NextResponse.json({ error: "Name, email, and traveler number are required" }, { status: 400 });
+
+    if (!name || !email || !traveler_number || !package_selection?.length) {
+      return NextResponse.json(
+        { error: "Name, email, traveler number, and package selection are required" },
+        { status: 400 }
+      );
     }
 
-    const sheets = await getSheetsClient();
+    // Convert package ID to integer
+    const packageId = parseInt(package_selection[0], 10);
+    if (isNaN(packageId)) {
+      return NextResponse.json({ error: "Invalid package ID" }, { status: 400 });
+    }
 
-    // Append new row to Google Sheet
+    // Convert traveler_number to integer
+    const travelers = parseInt(traveler_number, 10) || 1;
+
+    // Fetch package name from database
+    const packageData = await prisma.package.findUnique({
+      where: { id: packageId },
+    });
+
+    if (!packageData) {
+      return NextResponse.json({ error: "Package not found" }, { status: 404 });
+    }
+
+    // Fetch language names from database
+    const languageData = await prisma.language.findMany({
+      where: { code: { in: language_codes || [] } },
+    });
+
+    // Store row in Google Sheets
+    const sheets = await getSheetsClient();
     await sheets.spreadsheets.values.append({
       spreadsheetId: SHEET_ID,
       range: "Sheet1!A:L",
       valueInputOption: "RAW",
       requestBody: {
         values: [[
-          new Date().toISOString(),
+          new Date().toISOString(),       // Timestamp
           name,
           email,
           phone_number ?? "",
-          traveler_number,
+          travelers,
           time_available ?? "",
           Additional_preference ?? "",
-          package_selection?.join(", ") ?? "",
-          language_codes?.join(", ") ?? "",
+          packageData.name,              
+          languageData.map((l) => l.name).join(", "), 
           date_time ? new Date(date_time).toLocaleString() : "",
           Additional_note ?? ""
-
         ]],
       },
     });
