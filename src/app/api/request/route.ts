@@ -25,7 +25,6 @@ export async function POST(req: Request) {
       phone_number,
       traveler_number,
       time_available,
-      special_interest,
       package_selection, // array of package IDs as strings
       language_codes,    // array of language codes
       date_time,
