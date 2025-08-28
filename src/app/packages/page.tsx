@@ -30,6 +30,7 @@ export default function PackagesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
   const fullExperienceAnimation = useScrollAnimation();
   const guideOnlyAnimation = useScrollAnimation();
 
@@ -121,11 +122,7 @@ export default function PackagesPage() {
         </div>
 
         <div className="relative max-w-4xl mx-auto px-6 text-center">
-          <div className="mb-8">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-amber-100 rounded-full mb-6">
-              <MapPin className="w-10 h-10 text-amber-700" />
-            </div>
-          </div>
+          <div className="mb-8"></div>
 
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
             Our Packages
@@ -138,16 +135,20 @@ export default function PackagesPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               onClick={() =>
-                fullExperienceAnimation.ref.current?.scrollIntoView({
+                (
+                  fullExperienceAnimation.ref as React.RefObject<HTMLDivElement>
+                ).current?.scrollIntoView({
                   behavior: "smooth",
                 })
               }
-              className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 text-lg rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+              className="bg-amber-800 hover:bg-amber-900 text-white px-8 py-3 text-lg rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
               View Complete Packages
             </Button>
             <Button
               onClick={() =>
-                guideOnlyAnimation.ref.current?.scrollIntoView({
+                (
+                  guideOnlyAnimation.ref as React.RefObject<HTMLDivElement>
+                ).current?.scrollIntoView({
                   behavior: "smooth",
                 })
               }
@@ -163,9 +164,112 @@ export default function PackagesPage() {
 
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6">
+           <div
+            ref={guideOnlyAnimation.ref as React.RefObject<HTMLDivElement>}
+            className={` mb-20 transition-all duration-1000 ${
+              guideOnlyAnimation.isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
+            }`}>
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-100 rounded-full mb-6">
+                <Users className="w-8 h-8 text-amber-700" />
+              </div>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                Find a Local Friend
+              </h2>
+              <p className="text-gray-600 text-lg max-w-3xl mx-auto">
+                Just you and your guide, discovering the city together. No
+                extras, no fixed script, only real conversations and authentic
+                experiences at your pace.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {guideOnlyPackages.map((pkg, index) => {
+                const priceKeys = Object.keys(pkg.Price).filter(
+                  (key) => key !== "Regular"
+                );
+
+                return (
+                  <div
+                    key={pkg.id}
+                    className={`relative group transition-all duration-700 delay-${
+                      (index + 1) * 100
+                    } ${
+                      guideOnlyAnimation.isVisible
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 translate-y-8"
+                    }`}>
+                    <Card className="relative overflow-hidden  shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col group bg-white border border-gray-100 hover:border-amber-200 hover:scale-105">
+                      <CardHeader className="pb-4 pt-6">
+                        <CardTitle className="text-xl font-bold text-center text-gray-900 group-hover:text-amber-800 transition-colors">
+                          {pkg.name}
+                        </CardTitle>
+                      </CardHeader>
+
+                      <CardContent className="flex-1 pb-6">
+                        <div className="mb-6 space-y-3">
+                          <div className="p-4 rounded-lg text-center bg-amber-100 border-2 border-amber-200 group-hover:bg-amber-200 group-hover:border-amber-300 transition-colors">
+                            <div className="text-2xl font-bold text-amber-900">
+                              {pkg.Price.Regular}
+                            </div>
+                            <div className="text-sm font-semibold text-amber-700">
+                              Standard Rate
+                            </div>
+                          </div>
+                        </div>
+
+                        {priceKeys.length > 0 && (
+                          <div className="mb-6 space-y-3">
+                            {priceKeys.map((key) => (
+                              <div
+                                key={key}
+                                className="p-3 rounded-lg text-center bg-amber-50 border border-amber-100 group-hover:bg-amber-100 transition-colors">
+                                <div className="text-xl font-bold text-amber-800">
+                                  {pkg.Price[key]}
+                                </div>
+                                <div className="text-xs font-medium text-amber-600">
+                                  {key}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="space-y-3">
+                          <h4 className="font-semibold text-sm text-gray-900 mb-2">
+                            What&apos;s included:
+                          </h4>
+                          <ul className="space-y-2">
+                            {pkg.inclusions.map((item, i) => (
+                              <li key={i} className="flex items-start">
+                                <Check className="w-4 h-4 mt-0.5 mr-2 flex-shrink-0 text-amber-600" />
+                                <span className="text-sm text-gray-700">
+                                  {item}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </CardContent>
+
+                      <CardFooter className="pt-4">
+                        <Button
+                          onClick={() => handlePackageSelect(pkg.id)}
+                          className="w-full py-3 rounded-xl font-semibold transition-all duration-300 bg-amber-800 hover:bg-amber-900 text-white hover:shadow-lg group-hover:scale-105">
+                          Book Now
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
           <div
-            ref={fullExperienceAnimation.ref}
-            className={`mb-20 transition-all duration-1000 ${
+            ref={fullExperienceAnimation.ref as React.RefObject<HTMLDivElement>}
+            className={` transition-all duration-1000 ${
               fullExperienceAnimation.isVisible
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-8"
@@ -175,7 +279,7 @@ export default function PackagesPage() {
                 <MapPin className="w-8 h-8 text-amber-700" />
               </div>
               <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                The Complete Adventure
+                No Planning, Just Explore
               </h2>
               <p className="text-gray-600 text-lg max-w-3xl mx-auto">
                 A full journey that includes meals, transport and cultural
@@ -280,110 +384,7 @@ export default function PackagesPage() {
             </div>
           </div>
 
-          <div
-            ref={guideOnlyAnimation.ref}
-            className={`transition-all duration-1000 ${
-              guideOnlyAnimation.isVisible
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-8"
-            }`}>
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-100 rounded-full mb-6">
-                <Users className="w-8 h-8 text-amber-700" />
-              </div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                Explore With a Local Friend
-              </h2>
-              <p className="text-gray-600 text-lg max-w-3xl mx-auto">
-                Just you and your guide, discovering the city together. No
-                extras, no fixed script, only real conversations and authentic
-                experiences at your pace.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              {guideOnlyPackages.map((pkg, index) => {
-                const priceKeys = Object.keys(pkg.Price).filter(
-                  (key) => key !== "Regular"
-                );
-
-                return (
-                  <div
-                    key={pkg.id}
-                    className={`relative group transition-all duration-700 delay-${
-                      (index + 1) * 100
-                    } ${
-                      guideOnlyAnimation.isVisible
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 translate-y-8"
-                    }`}>
-                    <Card className="relative overflow-hidden  shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col group bg-white border border-gray-100 hover:border-amber-200 hover:scale-105">
-                      <CardHeader className="pb-4 pt-6">
-                        <CardTitle className="text-xl font-bold text-center text-gray-900 group-hover:text-amber-800 transition-colors">
-                          {pkg.name}
-                        </CardTitle>
-                      </CardHeader>
-
-                      <CardContent className="flex-1 pb-6">
-                        {/* Enhanced Price Display with bolder styling */}
-                        <div className="mb-6 space-y-3">
-                          <div className="p-4 rounded-lg text-center bg-amber-100 border-2 border-amber-200 group-hover:bg-amber-200 group-hover:border-amber-300 transition-colors">
-                            <div className="text-2xl font-bold text-amber-900">
-                              {pkg.Price.Regular}
-                            </div>
-                            <div className="text-sm font-semibold text-amber-700">
-                              Standard Rate
-                            </div>
-                          </div>
-                        </div>
-
-                        {priceKeys.length > 0 && (
-                          <div className="mb-6 space-y-3">
-                            {priceKeys.map((key) => (
-                              <div
-                                key={key}
-                                className="p-3 rounded-lg text-center bg-amber-50 border border-amber-100 group-hover:bg-amber-100 transition-colors">
-                                <div className="text-xl font-bold text-amber-800">
-                                  {pkg.Price[key]}
-                                </div>
-                                <div className="text-xs font-medium text-amber-600">
-                                  {key}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        <div className="space-y-3">
-                          <h4 className="font-semibold text-sm text-gray-900 mb-2">
-                            What&apos;s included:
-                          </h4>
-                          <ul className="space-y-2">
-                            {pkg.inclusions.map((item, i) => (
-                              <li key={i} className="flex items-start">
-                                <Check className="w-4 h-4 mt-0.5 mr-2 flex-shrink-0 text-amber-600" />
-                                <span className="text-sm text-gray-700">
-                                  {item}
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </CardContent>
-
-                      <CardFooter className="pt-4">
-                        <Button
-                          onClick={() => handlePackageSelect(pkg.id)}
-                          className="w-full py-3 rounded-xl font-semibold transition-all duration-300 bg-amber-800 hover:bg-amber-900 text-white hover:shadow-lg group-hover:scale-105">
-                          Book Now
-                        </Button>
-                      </CardFooter>
-                    </Card>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+         
         </div>
       </section>
 

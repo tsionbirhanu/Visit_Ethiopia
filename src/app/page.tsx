@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation";
 const heroImages = [
   "/images/tour.jpg",
   "/images/happy-day-ethiopian-tours.jpg",
-  "/images/harar_ethiopia_photography_tours.png",
+  "/images/images (4).jpeg",
   "/images/IMG_2974.png",
   "/images/Tour-Company-In-Ethiopia-Tour-and-Travel-in-Ethiopiaf.jpg",
   "/images/tmket.jpg",
@@ -30,7 +30,7 @@ export default function HomePage() {
   const router = useRouter();
 
   const taglines = [
-    "12 Hours. One Adventure. Let's Go.",
+    "Short Hours. Long Memories.",
     "Adventure Starts With a Hello.",
     "Meet Locals, Make Memories.",
   ];
@@ -162,7 +162,7 @@ export default function HomePage() {
                       1
                     </span>
                   </div>
-                  <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
                     Tell Us Your Timeframe
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
@@ -184,7 +184,7 @@ export default function HomePage() {
                       2
                     </span>
                   </div>
-                  <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
                     Match With a Local Guide
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
@@ -206,7 +206,7 @@ export default function HomePage() {
                       3
                     </span>
                   </div>
-                  <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
                     Go Live the Experience
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
@@ -221,7 +221,7 @@ export default function HomePage() {
           <div className="mt-16 text-center">
             <Button
               onClick={() => scrollToSection("experience-options")}
-              className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-4 text-lg rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+              className="bg-amber-800 hover:bg-amber-900 text-white px-8 py-4 text-lg rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
               Start Your Journey
             </Button>
           </div>
@@ -257,7 +257,7 @@ export default function HomePage() {
                 />
               </div>
               <CardContent className="p-6 text-center">
-                <h3 className="font-semibold text-gray-900 mb-2">
+                <h3 className="font-bold text-gray-900 mb-2">
                   Authentic Food Experiences
                 </h3>
                 <p className="text-gray-600 text-sm">
@@ -276,7 +276,7 @@ export default function HomePage() {
                 />
               </div>
               <CardContent className="p-6 text-center">
-                <h3 className="font-semibold text-gray-900 mb-2">
+                <h3 className="font-bold text-gray-900 mb-2">
                   Hidden Local Spots
                 </h3>
                 <p className="text-gray-600 text-sm">
@@ -295,7 +295,7 @@ export default function HomePage() {
                 />
               </div>
               <CardContent className="p-6 text-center">
-                <h3 className="font-semibold text-gray-900 mb-2">
+                <h3 className="font-bold text-gray-900 mb-2">
                   Cultural Stories
                 </h3>
                 <p className="text-gray-600 text-sm">
@@ -314,7 +314,7 @@ export default function HomePage() {
                 />
               </div>
               <CardContent className="p-6 text-center">
-                <h3 className="font-semibold text-gray-900 mb-2">
+                <h3 className="font-bold text-gray-900 mb-2">
                   Stress-Free Planning
                 </h3>
                 <p className="text-gray-600 text-sm">
@@ -333,7 +333,7 @@ export default function HomePage() {
                 />
               </div>
               <CardContent className="p-6 text-center">
-                <h3 className="font-semibold text-gray-900 mb-2">
+                <h3 className="font-bold text-gray-900 mb-2">
                   Personalized Experience
                 </h3>
                 <p className="text-gray-600 text-sm">
@@ -352,7 +352,7 @@ export default function HomePage() {
                 />
               </div>
               <CardContent className="p-6 text-center">
-                <h3 className="font-semibold text-gray-900 mb-2">
+                <h3 className="font-bold text-gray-900 mb-2">
                   Insider&apos;s View
                 </h3>
                 <p className="text-gray-600 text-sm">
@@ -387,7 +387,7 @@ export default function HomePage() {
             <Card className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden group h-full">
               <CardHeader className="pb-4 pt-8">
                 <CardTitle className="text-2xl font-bold text-center text-gray-900">
-                  Explore With a Local Friend
+                  Find a Local Friend
                 </CardTitle>
               </CardHeader>
 
@@ -420,7 +420,7 @@ export default function HomePage() {
 
               <CardFooter className="pt-4 flex flex-col">
                 <div className="w-full flex justify-between items-center mb-3">
-                  <span className="text-lg font-semibold text-amber-800">
+                  <span className="text-lg font-bold text-amber-800">
                     Starts from $30 USD
                   </span>
                   <Button
@@ -437,7 +437,7 @@ export default function HomePage() {
             <Card className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden group h-full">
               <CardHeader className="pb-4 pt-8">
                 <CardTitle className="text-2xl font-bold text-center text-gray-900">
-                  The Complete Adventure
+                  No Planning, Just Explore
                 </CardTitle>
               </CardHeader>
 
@@ -462,7 +462,7 @@ export default function HomePage() {
                     </div>
                     <div className="flex items-center">
                       <Check className="w-4 h-4 mr-2 text-amber-600 flex-shrink-0" />
-                      <span>Try Us For Free option available</span>
+                      <span>Hustle free experiences</span>
                     </div>
                   </div>
                 </div>
@@ -470,7 +470,7 @@ export default function HomePage() {
 
               <CardFooter className="pt-4 flex flex-col">
                 <div className="w-full flex justify-between items-center mb-3">
-                  <span className="text-lg font-semibold text-amber-800">
+                  <span className="text-lg font-bold text-amber-800">
                     Starts from $70 USD
                   </span>
                   <Button
@@ -485,12 +485,12 @@ export default function HomePage() {
           </div>
 
           <div className="mt-12 text-center">
-            <p className="text-gray-600 mb-4">
+            <h2 className="text-gray-600 font-bold text-2xl mb-4">
               Not sure which option is right for you?
-            </p>
+            </h2>
             <Button
               onClick={() => router.push("/contact")}
-              className="bg-white text-amber-800 hover:bg-amber-50 px-8 py-4 text-lg rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+              className="bg-amber-800 text-white hover:bg-amber-900 px-8 py-4 text-lg rounded-full font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
               Talk to Our Team
             </Button>
           </div>

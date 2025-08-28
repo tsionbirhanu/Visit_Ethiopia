@@ -287,14 +287,7 @@ export default function ContactPage() {
             <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
               Let&apos;s talk before you pay
             </p>
-            {selectedPackageId && (
-              <div className="bg-amber-100 border border-amber-300 rounded-lg p-4 mb-6">
-                <p className="text-amber-800 font-medium">
-                  🎉 You&apos;ve selected the &quot;{selectedPackageName}&quot;
-                  package! It&apos;s been pre-filled in the form below.
-                </p>
-              </div>
-            )}
+           
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 mb-8">
@@ -321,7 +314,7 @@ export default function ContactPage() {
                 <a
                   href="tel:+251905093496"
                   className="text-amber-600 hover:text-amber-700 transition-colors font-medium">
-                  +251 9943195220
+                  +251 943195220
                 </a>
               </CardContent>
             </Card>
@@ -382,7 +375,7 @@ export default function ContactPage() {
                     <Label
                       htmlFor="name"
                       className="text-gray-700 font-semibold">
-                      Full Name *
+                      Full Name <span className="text-red-600">*</span> 
                     </Label>
                     <Input
                       id="name"
@@ -400,7 +393,7 @@ export default function ContactPage() {
                     <Label
                       htmlFor="email"
                       className="text-gray-700 font-semibold">
-                      Email Address *
+                      Email Address <span className="text-red-600">*</span> 
                     </Label>
                     <Input
                       id="email"
@@ -529,7 +522,7 @@ export default function ContactPage() {
                   <Label
                     htmlFor="package"
                     className="text-gray-700 font-semibold">
-                    Package Selection *
+                    Package Selection  <span className="text-red-600">*</span> 
                   </Label>
                   {isLoadingPackages ? (
                     <div className="mt-2 p-3 border border-gray-300 rounded-md bg-gray-100 animate-pulse">
@@ -676,7 +669,7 @@ export default function ContactPage() {
                 <div className="pt-6">
                   <Button
                     type="submit"
-                    className="w-full bg-amber-600 hover:bg-amber-700 text-white py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                    className="w-full bg-amber-800 hover:bg-amber-900 text-white py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
                     disabled={isSubmitting}>
                     {isSubmitting ? "Sending..." : "Send My Request"}
                   </Button>
