@@ -221,7 +221,7 @@ export default function ContactPage() {
 
       if (response.ok) {
         try {
-          await fetch("/api/send_email", {
+          await fetch("/api/request", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

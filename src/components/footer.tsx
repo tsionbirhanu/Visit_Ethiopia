@@ -5,12 +5,6 @@ import Image from "next/image"
 import Link from "next/link"
 
 export default function Footer() {
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" })
-    }
-  }
 
   return (
     <footer id="contact" className="bg-gradient-to-br from-amber-900 to-amber-950 text-white">
@@ -39,12 +33,12 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <button
-                  onClick={() => scrollToSection("packages")}
+                <Link
+                  href="/packages"
                   className="text-amber-100 hover:text-orange-400 text-sm transition-colors duration-200"
                 >
                   Packages
-                </button>
+                </Link>
               </li>
               <li>
                 <Link
