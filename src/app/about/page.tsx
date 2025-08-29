@@ -12,7 +12,7 @@ export default function AboutPage() {
   const heroImages = [
     "/images/tour.jpg",
   "/images/happy-day-ethiopian-tours.jpg",
-  "/images/harar_ethiopia_photography_tours.png",
+  "/images/images (4).jpeg",
   "/images/IMG_2974.png",
   "/images/Tour-Company-In-Ethiopia-Tour-and-Travel-in-Ethiopiaf.jpg",
   "/images/tmket.jpg",
