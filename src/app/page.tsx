@@ -383,7 +383,6 @@ export default function HomePage() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {/* Guide Packages Box */}
             <Card className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden group h-full">
               <CardHeader className="pb-4 pt-8">
                 <CardTitle className="text-2xl font-bold text-center text-gray-900">
@@ -432,8 +431,6 @@ export default function HomePage() {
                 </div>
               </CardFooter>
             </Card>
-
-            {/* Complete Experience Packages Box */}
             <Card className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden group h-full">
               <CardHeader className="pb-4 pt-8">
                 <CardTitle className="text-2xl font-bold text-center text-gray-900">

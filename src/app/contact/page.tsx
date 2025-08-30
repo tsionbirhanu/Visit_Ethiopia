@@ -536,7 +536,6 @@ export default function ContactPage() {
                         <Select
                           onValueChange={(value) => {
                             field.onChange(value);
-                            // Update the selected package name when user changes selection
                             const selectedPkg = packages.find(
                               (pkg) => pkg.id.toString() === value
                             );
